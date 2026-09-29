@@ -1,58 +1,66 @@
 # Bill split: How do we make it?
 
+## Scope and outcome
+
+Build a small browser-based portfolio project that helps one upfront payer create a bill, track reimbursements, and export a clear payment request. The MVP supports one currency per bill and 2–8 named participants. Bills are saved locally, with no accounts or backend. The only shareable output is an image; payments happen outside the app.
+
+The exported image must stand on its own. Each recipient should be able to identify themselves and understand their share, the amount recorded as paid, and the amount still owed.
+
 ## MVP requirements
 
-Build this as a small browser-based portfolio project. Save bills locally, with no accounts or backend. The only shareable output is the exported image; the app does not process payments or connect to banks.
+The creator can create, edit, and delete a bill; split it equally or assign custom amounts; and manually record partial or full reimbursements. Shares must reconcile exactly to the bill total, and incorrect entries must be easy to correct.
 
-**Must have**
+The live chart, accessible text list, and exported image use the same state. Before sharing, the creator can preview the image, adjust participant display labels, and choose a neutral bill title. The app must handle empty bills, invalid totals, rounding, overpayment, fully settled bills, and failed exports.
 
-- Create, edit, and delete a bill with 2–8 named participants and one upfront payer.
-- Equal and custom-amount splits, with exact reconciliation to the total.
-- Manual marking of partial and full reimbursements, with easy correction.
-- Live chart, equivalent text list, and exported image generated from the same state.
-- Image preview, privacy controls for names and bill title, and a way to delete the local bill.
-- Empty, invalid-total, rounding, overpayment, fully settled, and failed-export states.
+Read-only share links, receipt scanning, item-level splits, recurring groups, multi-bill balances, multiple upfront payers, multiple currencies, and debt simplification are deferred. Themes, celebrations, and deeper personalization come after readability is proven.
 
-**Later**
+## Money, payments, and edits
 
-- Read-only share link with a clear snapshot/current-state distinction.
-- Receipt scanning and item-level splitting; recurring groups and multi-bill balances.
-- Multiple upfront payers, multiple currencies, and debt simplification.
-- Themes, celebrations, and deeper personalization once readability is proven.
+### Calculation and status rules
 
-## Money and status rules
+- Store amounts in the currency's smallest unit and state the rounding rule. For equal splits with a remainder, distribute extra smallest units deterministically and show the resulting shares before sharing.
+- Every share is nonnegative, and shares sum to the final bill total. A reimbursement cannot exceed the participant's outstanding amount without an explicit correction flow.
+- **Amount owed = assigned share − covered amount.** The upfront payer's own share is covered by their original payment; for everyone else, covered amount is the sum of recorded reimbursements. Treatment of refunds and excess reimbursements remains an open decision below.
+- The app records what the payer says they received; it does not verify a bank transfer. Label reimbursements **“recorded as paid”** rather than implying payment-provider confirmation.
+- Before saving a changed split, show its effect on recorded reimbursements and outstanding amounts.
 
-- Store amounts in the currency's smallest unit and use a stated rounding rule. For an equal split with a remainder, distribute the extra smallest units deterministically and display the resulting amounts before sharing.
-- Every participant's share is nonnegative, and the shares must sum to the final bill total. A reimbursement cannot exceed that participant's outstanding amount without an explicit correction flow.
-- **Amount owed = assigned share − covered amount.** For the upfront payer, their own share is covered by their original payment; for others, covered amount is the sum of recorded reimbursements.
-- The app records what the payer says they received; it does not verify a bank transfer. Label these entries **“recorded as paid”** rather than claiming payment-provider confirmation.
-- A changed split must surface any effect on previously recorded reimbursements before the edit is saved.
+### Open decision: edits after reimbursements — high severity
 
-## Experience principles
+An edit preview alone does not resolve every financial state. If someone has reimbursed $40 and their share becomes $30, the formula produces −$10 owed. Removing a reimbursed participant or changing the upfront payer can also leave the bill's amounts and payment records inconsistent.
 
-1. **Exact before expressive.** Numbers and status labels take precedence over motion or ornament.
-2. **No color-only meaning.** Use text, patterns, and shape cues; ensure the chart has an equivalent accessible list.
-3. **No surprise debt.** Let the creator review the final image and recipient amounts before sharing.
-4. **Make correction easy.** Let the creator edit a wrong amount and export a newly dated image without starting a new bill.
-5. **Protect the group.** Offer first-name/initial display, neutral bill titles, and a preview of exactly what a shared image reveals.
+Before implementing these edits, decide which are blocked and which require an explicit refund or correction flow. Preserve actual recorded reimbursements when shares change; never silently reduce or erase them to reconcile a new split. Correcting an incorrect payment entry and recording a real refund must be distinct actions.
 
-## Success criteria and validation
+The rules must define how excess reimbursements appear in participant amounts, totals, status labels, and exports, as well as when participant removal or payer changes are allowed. Validate the rules with three cases: a share reduced below the amount reimbursed, removal of a reimbursed participant, and a payer change after partial settlement.
+
+## Sharing, privacy, and presentation
+
+Numbers and status labels take precedence over motion or ornament. Use text, patterns, and shape cues so meaning does not depend on color, and give the chart an equivalent accessible list. Let the creator review exact recipient amounts and everything the image reveals before sharing. After a correction, they can export a newly dated image without starting a new bill.
+
+Offer first-name or initial display, recognizable aliases, and neutral bill titles. Display-label changes must retain the same participant and payment records internally.
+
+### Open decision: private labels and recognition — medium severity
+
+Privacy controls can make recipients hard to identify. Two people labeled “Alex” or “A” may not know which obligation is theirs, even if the creator finds the preview clear.
+
+Require distinct participant display labels in the export. Surface collisions after privacy controls are applied and require the creator to resolve them before exporting. The final interaction for choosing recognizable aliases or disambiguating labels still needs to be designed.
+
+Validate recognition with recipients using only the privacy-adjusted image, including duplicate first names and initials. Each person should be able to identify their own row and amount owed without coaching.
+
+## Validation and release gate
+
+The main product risk is comprehension: slice size represents **share**, while fill represents **payment progress**. A visually rich pie may make a simple obligation confusing. If people misread the static image, simplify the encoding or reduce decoration before shipping it as a payment request.
 
 The primary measure is **the percentage of created bills for which recipients can correctly state their share, amount already recorded as paid, and amount still owed after viewing only the exported image**. In usability sessions, aim for at least 90% correct answers across these three questions before emphasizing visual polish.
 
-Supporting measures: time to create and export a bill; rate of corrected splits after review; whether creators actually share the image; recorded settlement completion; and whether recipients express interest in making their own chart. Treat that last measure as an early signal of word-of-mouth potential, not a guaranteed outcome of attractive visuals.
+Test with at least five people who recently received a bill-splitting request, comparing the image against their current way of asking for reimbursement. Ask what the chart means, what they would pay, and whether the request feels comfortable to receive. Include small phone previews, grayscale viewing, long names, partial payments, and the recipient-recognition cases above.
 
-Test the concept with at least five people who recently received a bill-splitting request. Compare the image against their current way of asking for reimbursement. Ask each recipient what the chart means without coaching, what they would pay, and whether the request feels comfortable to receive. Test small phone previews, grayscale viewing, long names, and partial payments.
+Supporting measures are time to create and export a bill, corrected splits after review, actual image sharing, recorded settlement completion, and recipient interest in making their own chart. Treat recipient interest as an early signal of word-of-mouth potential, not a guaranteed result of attractive visuals.
 
-## Suggested delivery sequence
+## Delivery sequence
 
-1. **Make a moodboard:** Gather references for expressive pies, poster-like image layouts, typography, color, texture, and motion. Identify what feels distinctive and what still reads clearly at phone preview size.
-2. **Prototype the information model:** Draw the chart and export with realistic bills, including uneven splits and partial payments. Resolve any ambiguity in “paid” versus “owed.”
-3. **Build bill entry and tracking:** Enter a total and participants, calculate and review shares, then manually mark reimbursements. No payment processing or bank integration.
-4. **Build one chart system:** Live interactions and deterministic static export from the same data.
-5. **Pilot image sharing:** Export the image, review its privacy and legibility, and run usability sessions with real groups.
-6. **Polish based on evidence:** Improve legibility, tone, and delight after recipients consistently understand the amounts.
-
-## Main product risk
-
-A visually rich pie can make a simple obligation look confusing, especially when slice size means **share** while the fill means **payment progress**. The release gate is comprehension: if people misread the chart in static form, simplify the encoding or reduce decoration before shipping it as a payment request.
+1. **Make a moodboard.** Gather references for expressive pies, poster-like layouts, typography, color, texture, and motion. Identify what feels distinctive and remains clear at phone preview size.
+2. **Prototype the information model.** Draw the chart and export with realistic uneven splits and partial payments. Clarify “paid” versus “owed” and resolve the edit and privacy decisions above.
+3. **Build bill entry and tracking.** Calculate and review shares, record reimbursements, and implement the agreed correction and edit rules.
+4. **Build one chart system.** Generate live interactions and deterministic static exports from the same data, with privacy controls and image preview.
+5. **Pilot image sharing.** Run usability sessions with real groups to assess amounts, recipient recognition, privacy, legibility, and comfort.
+6. **Polish based on evidence.** Improve legibility, tone, and delight once recipients consistently understand the amounts.
