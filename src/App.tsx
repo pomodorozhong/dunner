@@ -57,12 +57,12 @@ export default function App() {
 
   return <div className="app-shell">
     <header className="site-header flex items-center justify-between">
-      <a href="#main" className="brand flex items-center gap-2" aria-label="Dunner Sankey studio"><span className="brand-mark" aria-hidden="true">d.</span> dunner<span className="brand-divider" />Sankey studio</a>
+      <a href="#main" className="brand flex items-center gap-2" aria-label="Dunner Sankey comparison"><span className="brand-mark" aria-hidden="true">d.</span> dunner<span className="brand-divider" />Sankey comparison</a>
       <span className="fixture-pill"><span className="status-dot" />Local prototype · fixture data</span>
     </header>
     <main id="main">
       <section className="hero">
-        <div><p className="eyebrow">ONE SNAPSHOT. THREE WAYS TO SEE IT.</p><h1>Follow the flow.</h1><p className="hero-description">Same household, same numbers. Explore three Sankey libraries<br className="hidden md:block" /> and find the interaction that makes sharing feel clear.</p><a className="matrix-jump" href="#library-comparison-title">Library comparison ↓</a></div>
+        <div><p className="eyebrow">INTERNAL PROTOTYPE</p><h1>Sankey library comparison</h1><p className="hero-description">Compare ECharts, Nivo, and Plotly.js using the same October 2026 expense fixture.</p><a className="matrix-jump" href="#library-comparison-title">Library comparison ↓</a></div>
         <div className="hero-note"><span className="note-number">03</span><span>renderers<br />one shared fixture</span></div>
       </section>
 
@@ -92,7 +92,7 @@ export default function App() {
 
       <LibraryComparison />
       <section className="comparison-notes">
-        <div><p className="eyebrow">WHAT TO COMPARE</p><h2>The details make the difference.</h2></div>
+        <div><p className="eyebrow">REVIEW TASKS</p><h2>Comparison tasks</h2></div>
         <ol><li><span>01</span><div><strong>Read the first render</strong><p>Follow one expense to each roommate. Replay and compare the arrival of labels and ribbons.</p></div></li><li><span>02</span><div><strong>Explore, then simplify</strong><p>Hover, click a share, try dragging, and group utilities. Watch what each package preserves.</p></div></li><li><span>03</span><div><strong>Share the result</strong><p>Download each card. Can someone identify their share from the image alone?</p></div></li></ol>
       </section>
     </main>

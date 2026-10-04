@@ -1,4 +1,4 @@
-# Dunner Sankey studio
+# Dunner Sankey comparison
 
 A local comparison of Apache ECharts, Nivo, and Plotly.js for an interactive, shareable expense card. All three use the same fictional October 2026 household, category colors, and NT$40,000 allocation. No household setup, data entry, backend, or saved records are required.
 
