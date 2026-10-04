@@ -43,9 +43,11 @@ export default function LibraryComparison() {
   const [now, setNow] = useState(Date.now)
   useEffect(() => { const timer = window.setInterval(() => setNow(Date.now()), 60000); return () => clearInterval(timer) }, [])
   const checked = new Date(stats.fetchedAt).toLocaleString('en-GB', { timeZone: 'UTC', dateStyle: 'medium', timeStyle: 'short' })
-  return <section className="library-comparison" aria-labelledby="library-comparison-title">
-    <p className="eyebrow">LIBRARY COMPARISON DETAILS</p>
-    <h2 id="library-comparison-title">Compare the libraries.</h2>
+  return <section className="page-section library-comparison" aria-labelledby="library-comparison-title">
+    <header className="page-section-heading">
+      <p className="eyebrow">03 · LIBRARIES</p>
+      <h2 id="library-comparison-title">Library comparison</h2>
+    </header>
     <p className="matrix-intro">Repository stats checked {checked} UTC. Stars are for the whole repository; activity is the latest default-branch commit, not the Sankey module’s last change. Relative times use your device clock.</p>
     <p className="matrix-scroll-hint">On small screens, scroll sideways to compare. Keyboard: focus the table and use the arrow keys.</p>
     <div className="matrix-scroll" role="region" aria-label="Scrollable library comparison table" tabIndex={0}>

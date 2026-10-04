@@ -60,29 +60,38 @@ export default function App() {
       <span className="fixture-pill"><span className="status-dot" />Local prototype · fixture data</span>
     </header>
     <main id="main">
-      <section className="comparison-notes">
-        <div><p className="eyebrow">REVIEW TASKS</p><h2>Comparison tasks</h2></div>
+      <section className="page-section comparison-notes" aria-labelledby="review-tasks-title">
+        <header className="page-section-heading">
+          <p className="eyebrow">01 · REVIEW</p>
+          <h2 id="review-tasks-title">Review tasks</h2>
+        </header>
         <ol><li><span>01</span><div><strong>Read the first render</strong><p>Follow one expense to each roommate. Replay and compare the arrival of labels and ribbons.</p></div></li><li><span>02</span><div><strong>Explore, then simplify</strong><p>Hover, click a share, try dragging, and group utilities. Watch what each package preserves.</p></div></li><li><span>03</span><div><strong>Share the result</strong><p>Download each card. Can someone identify their share from the image alone?</p></div></li></ol>
       </section>
 
-      <section className="studio-toolbar" aria-label="Comparison controls">
-        <div className="toolbar-actions flex flex-wrap items-center gap-2">
-          <button className="control-button" aria-describedby="grouping-status" disabled={!!exporting} onClick={() => changeGrouping(nextGrouping(grouping))}>{groupingInfo[grouping].action}</button>
-          <button className="text-button" disabled={!!exporting} onClick={replay}>↻ Replay render</button>
-          <button className="text-button" aria-pressed={reducedMotion} disabled={!!exporting || systemReducedMotion} onClick={() => setMotionOff(value => !value)}>{reducedMotion ? 'Motion off' : 'Reduce motion'}</button>
-          <button className="text-button" disabled={!!exporting} onClick={reset}>Reset view</button>
-        </div>
-      </section>
-      {narrow && <div className="mobile-picker"><label htmlFor="mobile-engine">Choose renderer</label><select id="mobile-engine" value={mobileEngine} disabled={!!exporting} onChange={event => setMobileEngine(event.target.value as Engine)}>{engines.map(engine => <option key={engine} value={engine}>{info[engine].name}</option>)}</select><span>On wide screens, all three charts appear side by side.</span></div>}
-      <p id="grouping-status" className="grouping-explanation" role="status"><strong>{groupingInfo[grouping].label} · {grouping === 'individual' ? '1' : grouping === 'grouped' ? '2' : '3'} / 3.</strong> {grouping === 'detailed' ? 'Utilities stays visible and branches into Electricity, Water, and Internet before reaching the roommates.' : 'Cycle through individual expenses, grouped utilities, and utilities with individual bills.'} Utilities = 2,400 + 600 + 1,000 = NT$4,000. Total and shares stay unchanged. Layouts switch directly; Replay tries native initial motion.</p>
-      <div className="interaction-hint flex items-center justify-between gap-3"><p><span aria-hidden="true">↗</span> Click a node or ribbon to inspect it. Hover to try native highlights. Drag nodes where supported.</p><span>{reducedMotion ? 'Reduced motion on' : 'Native motion on'}</span></div>
+      <section className="page-section sankey-comparison" aria-labelledby="sankey-comparison-title">
+        <header className="page-section-heading">
+          <p className="eyebrow">02 · RENDERERS</p>
+          <h2 id="sankey-comparison-title">Sankey comparison</h2>
+        </header>
+        <section className="studio-toolbar" aria-label="Comparison controls">
+          <div className="toolbar-actions flex flex-wrap items-center gap-2">
+            <button className="control-button" aria-describedby="grouping-status" disabled={!!exporting} onClick={() => changeGrouping(nextGrouping(grouping))}>{groupingInfo[grouping].action}</button>
+            <button className="text-button" disabled={!!exporting} onClick={replay}>↻ Replay render</button>
+            <button className="text-button" aria-pressed={reducedMotion} disabled={!!exporting || systemReducedMotion} onClick={() => setMotionOff(value => !value)}>{reducedMotion ? 'Motion off' : 'Reduce motion'}</button>
+            <button className="text-button" disabled={!!exporting} onClick={reset}>Reset view</button>
+          </div>
+        </section>
+        {narrow && <div className="mobile-picker"><label htmlFor="mobile-engine">Choose renderer</label><select id="mobile-engine" value={mobileEngine} disabled={!!exporting} onChange={event => setMobileEngine(event.target.value as Engine)}>{engines.map(engine => <option key={engine} value={engine}>{info[engine].name}</option>)}</select><span>On wide screens, all three charts appear side by side.</span></div>}
+        <p id="grouping-status" className="grouping-explanation" role="status"><strong>{groupingInfo[grouping].label} · {grouping === 'individual' ? '1' : grouping === 'grouped' ? '2' : '3'} / 3.</strong> {grouping === 'detailed' ? 'Utilities stays visible and branches into Electricity, Water, and Internet before reaching the roommates.' : 'Cycle through individual expenses, grouped utilities, and utilities with individual bills.'} Utilities = 2,400 + 600 + 1,000 = NT$4,000. Total and shares stay unchanged. Layouts switch directly; Replay tries native initial motion.</p>
+        <div className="interaction-hint flex items-center justify-between gap-3"><p><span aria-hidden="true">↗</span> Click a node or ribbon to inspect it. Hover to try native highlights. Drag nodes where supported.</p><span>{reducedMotion ? 'Reduced motion on' : 'Native motion on'}</span></div>
 
-      <section className={`comparison-grid ${visible.length === 1 ? 'single-view' : ''} ${exporting ? 'exporting' : ''}`} aria-label="Sankey package comparison">
-        {visible.map(engine => <Variant key={engine} engine={engine} graph={graph} grouping={grouping} expanded={expanded} epoch={epoch} initialAnimation={initialAnimation} presentation={presentations.current[engine]}
-          selected={selections[engine]} reducedMotion={reducedMotion} locked={!!exporting}
-          onToggleGroup={() => changeGrouping(nextGrouping(grouping))} onExpand={grouping === 'grouped' ? () => changeGrouping('detailed') : undefined} onToggleDetails={() => setExpanded(value => !value)}
-          onSelect={id => setSelections(current => ({ ...current, [engine]: current[engine] === id ? null : id }))}
-          onExportState={busy => setExporting(busy ? engine : null)} />)}
+        <section className={`comparison-grid ${visible.length === 1 ? 'single-view' : ''} ${exporting ? 'exporting' : ''}`} aria-label="Sankey package comparison">
+          {visible.map(engine => <Variant key={engine} engine={engine} graph={graph} grouping={grouping} expanded={expanded} epoch={epoch} initialAnimation={initialAnimation} presentation={presentations.current[engine]}
+            selected={selections[engine]} reducedMotion={reducedMotion} locked={!!exporting}
+            onToggleGroup={() => changeGrouping(nextGrouping(grouping))} onExpand={grouping === 'grouped' ? () => changeGrouping('detailed') : undefined} onToggleDetails={() => setExpanded(value => !value)}
+            onSelect={id => setSelections(current => ({ ...current, [engine]: current[engine] === id ? null : id }))}
+            onExportState={busy => setExporting(busy ? engine : null)} />)}
+        </section>
       </section>
 
       <LibraryComparison />
