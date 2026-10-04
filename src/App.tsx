@@ -28,7 +28,7 @@ class ChartBoundary extends Component<{ children: ReactNode; onError: (message: 
 export default function App() {
   const [grouping, setGrouping] = useState<GroupingMode>('individual')
   const [expanded, setExpanded] = useState(true)
-  const [mobileEngine, setMobileEngine] = useState<Engine>('echarts')
+  const [activeVariant, setActiveVariant] = useState(0)
   const [epoch, setEpoch] = useState(0)
   const [initialAnimation, setInitialAnimation] = useState(true)
   const [selections, setSelections] = useState(emptySelection)
@@ -38,8 +38,34 @@ export default function App() {
   const [motionOff, setMotionOff] = useState(false)
   const reducedMotion = systemReducedMotion || motionOff
   const narrow = useMedia('(max-width: 1199px)')
+  const comparisonRef = useRef<HTMLElement>(null)
   const graph = useMemo(() => buildGraph(grouping), [grouping])
-  const visible = narrow ? [mobileEngine] : engines
+
+  const updateActiveVariant = useCallback(() => {
+    if (!narrow || !comparisonRef.current) return
+    const viewport = comparisonRef.current
+    const viewportLeft = viewport.getBoundingClientRect().left
+    const variants = [...viewport.querySelectorAll<HTMLElement>('.variant')]
+    const nearest = variants.reduce((result, variant, index) => {
+      const distance = Math.abs(variant.getBoundingClientRect().left - viewportLeft)
+      return distance < result.distance ? { index, distance } : result
+    }, { index: 0, distance: Number.POSITIVE_INFINITY }).index
+    setActiveVariant(current => current === nearest ? current : nearest)
+  }, [narrow])
+
+  const scrollToVariant = useCallback((index: number) => {
+    const viewport = comparisonRef.current
+    const variant = viewport?.querySelectorAll<HTMLElement>('.variant')[index]
+    if (!viewport || !variant) return
+    const left = variant.getBoundingClientRect().left - viewport.getBoundingClientRect().left + viewport.scrollLeft
+    viewport.scrollTo({ left, behavior: reducedMotion ? 'auto' : 'smooth' })
+  }, [reducedMotion])
+
+  useEffect(() => {
+    if (!narrow) return
+    comparisonRef.current?.scrollTo({ left: 0, behavior: 'auto' })
+    setActiveVariant(0)
+  }, [narrow])
 
   const changeGrouping = useCallback((next: GroupingMode) => {
     const nextGraph = buildGraph(next)
@@ -81,12 +107,18 @@ export default function App() {
             <button className="text-button" disabled={!!exporting} onClick={reset}>Reset view</button>
           </div>
         </section>
-        {narrow && <div className="mobile-picker"><label htmlFor="mobile-engine">Choose renderer</label><select id="mobile-engine" value={mobileEngine} disabled={!!exporting} onChange={event => setMobileEngine(event.target.value as Engine)}>{engines.map(engine => <option key={engine} value={engine}>{info[engine].name}</option>)}</select><span>On wide screens, all three charts appear side by side.</span></div>}
         <p id="grouping-status" className="grouping-explanation" role="status"><strong>{groupingInfo[grouping].label} · {grouping === 'individual' ? '1' : grouping === 'grouped' ? '2' : '3'} / 3.</strong> {grouping === 'detailed' ? 'Utilities stays visible and branches into Electricity, Water, and Internet before reaching the roommates.' : 'Cycle through individual expenses, grouped utilities, and utilities with individual bills.'} Utilities = 2,400 + 600 + 1,000 = NT$4,000. Total and shares stay unchanged. Layouts switch directly; Replay tries native initial motion.</p>
         <div className="interaction-hint flex items-center justify-between gap-3"><p><span aria-hidden="true">↗</span> Click a node or ribbon to inspect it. Hover to try native highlights. Drag nodes where supported.</p><span>{reducedMotion ? 'Reduced motion on' : 'Native motion on'}</span></div>
 
-        <section className={`comparison-grid ${visible.length === 1 ? 'single-view' : ''} ${exporting ? 'exporting' : ''}`} aria-label="Sankey package comparison">
-          {visible.map(engine => <Variant key={engine} engine={engine} graph={graph} grouping={grouping} expanded={expanded} epoch={epoch} initialAnimation={initialAnimation} presentation={presentations.current[engine]}
+        {narrow && <nav className="renderer-navigation" aria-label="Sankey renderer navigation">
+          <button type="button" aria-controls="sankey-renderers" aria-label="Previous Sankey renderer" disabled={!!exporting || activeVariant === 0} onClick={() => scrollToVariant(activeVariant - 1)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H5m6 6-6-6 6-6" /></svg></button>
+          <span aria-live="polite" aria-atomic="true"><strong>{String(activeVariant + 1).padStart(2, '0')} / 03</strong>{info[engines[activeVariant]].name}</span>
+          <button type="button" aria-controls="sankey-renderers" aria-label="Next Sankey renderer" disabled={!!exporting || activeVariant === engines.length - 1} onClick={() => scrollToVariant(activeVariant + 1)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6" /></svg></button>
+        </nav>}
+        {narrow && <p className="renderer-scroll-hint">Swipe or scroll horizontally to compare all three Sankeys.</p>}
+
+        <section ref={comparisonRef} id="sankey-renderers" className={`comparison-grid ${exporting ? 'exporting' : ''}`} aria-label="Sankey package comparison" tabIndex={narrow ? 0 : undefined} onScroll={updateActiveVariant}>
+          {engines.map(engine => <Variant key={engine} engine={engine} graph={graph} grouping={grouping} expanded={expanded} epoch={epoch} initialAnimation={initialAnimation} presentation={presentations.current[engine]}
             selected={selections[engine]} reducedMotion={reducedMotion} locked={!!exporting}
             onToggleGroup={() => changeGrouping(nextGrouping(grouping))} onExpand={grouping === 'grouped' ? () => changeGrouping('detailed') : undefined} onToggleDetails={() => setExpanded(value => !value)}
             onSelect={id => setSelections(current => ({ ...current, [engine]: current[engine] === id ? null : id }))}
