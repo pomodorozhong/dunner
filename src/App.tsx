@@ -28,7 +28,6 @@ class ChartBoundary extends Component<{ children: ReactNode; onError: (message: 
 export default function App() {
   const [grouping, setGrouping] = useState<GroupingMode>('individual')
   const [expanded, setExpanded] = useState(true)
-  const [view, setView] = useState<'all' | Engine>('all')
   const [mobileEngine, setMobileEngine] = useState<Engine>('echarts')
   const [epoch, setEpoch] = useState(0)
   const [initialAnimation, setInitialAnimation] = useState(true)
@@ -40,7 +39,7 @@ export default function App() {
   const reducedMotion = systemReducedMotion || motionOff
   const narrow = useMedia('(max-width: 1199px)')
   const graph = useMemo(() => buildGraph(grouping), [grouping])
-  const visible = view === 'all' ? narrow ? [mobileEngine] : engines : [view]
+  const visible = narrow ? [mobileEngine] : engines
 
   const changeGrouping = useCallback((next: GroupingMode) => {
     const nextGraph = buildGraph(next)
@@ -67,10 +66,6 @@ export default function App() {
       </section>
 
       <section className="studio-toolbar" aria-label="Comparison controls">
-        <div className="view-switch" role="group" aria-label="Choose comparison view">
-          <button aria-pressed={view === 'all'} onClick={() => setView('all')} disabled={!!exporting}>Compare all</button>
-          {engines.map(engine => <button key={engine} aria-pressed={view === engine} onClick={() => setView(engine)} disabled={!!exporting}>{engine === 'echarts' ? 'ECharts' : info[engine].name}</button>)}
-        </div>
         <div className="toolbar-actions flex flex-wrap items-center gap-2">
           <button className="control-button" aria-describedby="grouping-status" disabled={!!exporting} onClick={() => changeGrouping(nextGrouping(grouping))}>{groupingInfo[grouping].action}</button>
           <button className="text-button" disabled={!!exporting} onClick={replay}>↻ Replay render</button>
@@ -78,7 +73,7 @@ export default function App() {
           <button className="text-button" disabled={!!exporting} onClick={reset}>Reset view</button>
         </div>
       </section>
-      {view === 'all' && narrow && <div className="mobile-picker"><label htmlFor="mobile-engine">Compare a renderer</label><select id="mobile-engine" value={mobileEngine} disabled={!!exporting} onChange={event => setMobileEngine(event.target.value as Engine)}>{engines.map(engine => <option key={engine} value={engine}>{info[engine].name}</option>)}</select><span>Choose Compare all on a wide screen to see all three together.</span></div>}
+      {narrow && <div className="mobile-picker"><label htmlFor="mobile-engine">Choose renderer</label><select id="mobile-engine" value={mobileEngine} disabled={!!exporting} onChange={event => setMobileEngine(event.target.value as Engine)}>{engines.map(engine => <option key={engine} value={engine}>{info[engine].name}</option>)}</select><span>On wide screens, all three charts appear side by side.</span></div>}
       <p id="grouping-status" className="grouping-explanation" role="status"><strong>{groupingInfo[grouping].label} · {grouping === 'individual' ? '1' : grouping === 'grouped' ? '2' : '3'} / 3.</strong> {grouping === 'detailed' ? 'Utilities stays visible and branches into Electricity, Water, and Internet before reaching the roommates.' : 'Cycle through individual expenses, grouped utilities, and utilities with individual bills.'} Utilities = 2,400 + 600 + 1,000 = NT$4,000. Total and shares stay unchanged. Layouts switch directly; Replay tries native initial motion.</p>
       <div className="interaction-hint flex items-center justify-between gap-3"><p><span aria-hidden="true">↗</span> Click a node or ribbon to inspect it. Hover to try native highlights. Drag nodes where supported.</p><span>{reducedMotion ? 'Reduced motion on' : 'Native motion on'}</span></div>
 
