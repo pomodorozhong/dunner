@@ -1,0 +1,20 @@
+Use case: ui-mockup.
+Asset type: standalone shareable rent snapshot image sent into a household chat, NOT an app screenshot.
+Primary request: Design one elegant, legible portrait image that tells roommates what this rent request is for, who receives the money, when it is due, and each person's exact share, manually recorded contribution, and remaining amount. This is a design review mockup for Dunner rent-sharing browser prototype.
+Composition: portrait aspect approximately 4:5 or 3:4, a single complete flat card filling canvas, no phone frame, no browser chrome, no surrounding presentation board. Crisp readable text that is usable viewed on a phone. Spacious but compact professional editorial visual design, warm ivory background, dark ink type, teal recorded money and amber remaining money, restrained serif heading paired with sans-serif labels and tabular numerals. Thin rules, no gradients, no decorative illustration.
+Exact text and hierarchy:
+Top small eyebrow "MONTHLY RENT".
+Large heading "October 2026".
+Under heading "Household total" with "NT$30,000".
+Two clear inline information blocks "Due date" / "Oct 5, 2026" and "Pay to" / "Wen".
+Below, visually distinct summary "Recorded" / "NT$18,000" and "Remaining" / "NT$12,000".
+Center graphic: genuine accurate Sankey diagram, three left source nodes Wen share 12,000; Jonathan share 10,000; Mei share 8,000. Flow widths proportional: Wen 12,000 entirely teal to single right sink Recorded 18,000; Jonathan splits 6,000 teal to Recorded and 4,000 amber to right sink Remaining 12,000; Mei 8,000 amber to Remaining. Label branches 12,000 / 6,000 / 4,000 / 8,000. No double counting, no extraneous paths. Chart should occupy enough room to see the flow while text details remain readable.
+Under diagram concise table with exactly three rows and four columns:
+"Person" | "Share" | "Recorded" | "Remaining"
+"Wen" | "12,000" | "12,000" | "0"
+"Jonathan" | "10,000" | "6,000" | "4,000"
+"Mei" | "8,000" | "0" | "8,000"
+Above table small label "All amounts in NT$".
+Show status text associated with individual rows if it fits cleanly: Wen "Fully received", Jonathan "Partly received", Mei "Not received". Prioritize exact amounts and avoid overcrowding.
+Footer exact words "Snapshot · Oct 4, 2026" and "Contributions recorded by Wen; not bank-confirmed." Small discreet "Dunner".
+Constraints: card communicates action and context beyond how much was paid. Image is a static dated snapshot. No buttons, input fields, navigation, backup controls, dropdowns, hovering instructions, QR code, fake banking credentials, notification/reminder features, login, photo, watermark, or charts other than Sankey. No added fees or currencies. This sample includes coordinator Wen's own recorded share. Never call remaining amounts overdue: due Oct 5 and snapshot Oct 4. Keep every roommate's exact figures visible, no Others grouping in this sample. All amounts total correctly.

@@ -1,0 +1,38 @@
+{
+  "fetchedAt": "2026-10-04T11:53:45.111Z",
+  "libraries": {
+    "echarts": {
+      "repository": "apache/echarts",
+      "url": "https://github.com/apache/echarts",
+      "stars": 67447,
+      "license": "Apache-2.0",
+      "defaultBranch": "master",
+      "archived": false,
+      "commitDate": "2026-10-04T10:59:16Z",
+      "commitUrl": "https://github.com/apache/echarts/commit/34f4d927eafe251f26f63afd3aeefa30f2feba30",
+      "licenseUrl": "https://github.com/apache/echarts/blob/master/LICENSE"
+    },
+    "nivo": {
+      "repository": "plouc/nivo",
+      "url": "https://github.com/plouc/nivo",
+      "stars": 14106,
+      "license": "MIT",
+      "defaultBranch": "master",
+      "archived": false,
+      "commitDate": "2026-07-21T02:40:47Z",
+      "commitUrl": "https://github.com/plouc/nivo/commit/0dae2c32052a573f9f1d66ec1b453b572119b265",
+      "licenseUrl": "https://github.com/plouc/nivo/blob/master/LICENSE.md"
+    },
+    "plotly": {
+      "repository": "plotly/plotly.js",
+      "url": "https://github.com/plotly/plotly.js",
+      "stars": 18355,
+      "license": "MIT",
+      "defaultBranch": "main",
+      "archived": false,
+      "commitDate": "2026-10-03T20:09:44Z",
+      "commitUrl": "https://github.com/plotly/plotly.js/commit/c9ce4738fb54e9db325dfb7c056a5cde113c4fb2",
+      "licenseUrl": "https://github.com/plotly/plotly.js/blob/main/LICENSE"
+    }
+  }
+}
