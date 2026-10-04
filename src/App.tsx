@@ -61,9 +61,9 @@ export default function App() {
       <span className="fixture-pill"><span className="status-dot" />Local prototype · fixture data</span>
     </header>
     <main id="main">
-      <section className="hero">
-        <div><p className="eyebrow">INTERNAL PROTOTYPE</p><h1>Sankey library comparison</h1><p className="hero-description">Compare ECharts, Nivo, and Plotly.js using the same October 2026 expense fixture.</p><a className="matrix-jump" href="#library-comparison-title">Library comparison ↓</a></div>
-        <div className="hero-note"><span className="note-number">03</span><span>renderers<br />one shared fixture</span></div>
+      <section className="comparison-notes">
+        <div><p className="eyebrow">REVIEW TASKS</p><h2>Comparison tasks</h2></div>
+        <ol><li><span>01</span><div><strong>Read the first render</strong><p>Follow one expense to each roommate. Replay and compare the arrival of labels and ribbons.</p></div></li><li><span>02</span><div><strong>Explore, then simplify</strong><p>Hover, click a share, try dragging, and group utilities. Watch what each package preserves.</p></div></li><li><span>03</span><div><strong>Share the result</strong><p>Download each card. Can someone identify their share from the image alone?</p></div></li></ol>
       </section>
 
       <section className="studio-toolbar" aria-label="Comparison controls">
@@ -91,10 +91,6 @@ export default function App() {
       </section>
 
       <LibraryComparison />
-      <section className="comparison-notes">
-        <div><p className="eyebrow">REVIEW TASKS</p><h2>Comparison tasks</h2></div>
-        <ol><li><span>01</span><div><strong>Read the first render</strong><p>Follow one expense to each roommate. Replay and compare the arrival of labels and ribbons.</p></div></li><li><span>02</span><div><strong>Explore, then simplify</strong><p>Hover, click a share, try dragging, and group utilities. Watch what each package preserves.</p></div></li><li><span>03</span><div><strong>Share the result</strong><p>Download each card. Can someone identify their share from the image alone?</p></div></li></ol>
-      </section>
     </main>
     <footer className="site-footer"><span>Dunner / interaction study 001</span><span>Fictional household · no data entry or saved records</span></footer>
   </div>

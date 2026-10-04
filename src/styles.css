@@ -21,13 +21,7 @@ select { color: inherit; }
 .brand-divider { height: 16px; width: 1px; background: #cbceca; margin: 0 8px; }
 .fixture-pill { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #677068; }
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #45997b; }
-.hero { padding: 47px 0 36px; display: flex; justify-content: space-between; align-items: center; }
 .eyebrow { font-size: 9px; font-weight: 700; letter-spacing: .13em; color: #75817e; }
-.hero .eyebrow { font-size: 10px; margin-bottom: 12px; }
-.hero h1 { font-size: clamp(40px, 5vw, 65px); line-height: 1.07; letter-spacing: -.055em; font-weight: 600; color: #24332f; }
-.hero-description { margin-top: 17px; font-size: 13px; line-height: 1.7; color: #737b75; }
-.hero-note { display: flex; gap: 16px; align-items: center; color: #899089; font-size: 11px; line-height: 1.5; }
-.note-number { font-size: 62px; letter-spacing: -.07em; font-weight: 300; color: #a0aaa0; }
 .studio-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border-top: 1px solid #dcded8; border-bottom: 1px solid #dcded8; }
 .view-switch { display: inline-flex; flex-wrap: wrap; padding: 4px; gap: 2px; border-radius: 9px; background: #e9eae4; }
 .view-switch button { padding: 9px 13px; font-size: 11px; color: #69736b; border-radius: 6px; }
@@ -114,7 +108,7 @@ select { color: inherit; }
 .inspector-body caption { text-align: left; padding-bottom: 8px; }
 .inspector-body th, .inspector-body td { padding: 6px 3px; text-align: right; border-bottom: 1px solid #d9e1d4; }
 .inspector-body th:first-child { text-align: left; font-weight: 500; }
-.comparison-notes { margin-top: 52px; padding: 30px 0; border-top: 1px solid #d9dfd4; display: grid; grid-template-columns: 1fr 2fr; gap: 40px; }
+.comparison-notes { margin: 0; padding: 24px 0 28px; border-bottom: 1px solid #d9dfd4; display: grid; grid-template-columns: 1fr 2fr; gap: 40px; }
 .comparison-notes h2 { font-size: 22px; letter-spacing: -.04em; line-height: 1.25; margin-top: 11px; max-width: 220px; }
 .comparison-notes ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 25px; }
 .comparison-notes li { display: flex; gap: 10px; }
@@ -133,8 +127,8 @@ select { color: inherit; }
 .preview-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; padding-bottom: 14px; }
 .png-dialog img { width: 100%; height: auto; display: block; }
 @media (min-width: 1200px) { .single-view .share-card { padding: 35px; } .single-view .total-row > strong { font-size: 46px; } .single-view .chart-host { height: 350px; } }
-@media (max-width: 1199px) { .app-shell { max-width: 880px; padding: 0 28px; } .comparison-grid { grid-template-columns: minmax(0, 700px); justify-content: center; } .studio-toolbar { flex-wrap: wrap; } .total-row > strong { font-size: 40px; } .hero-note { display: none; } .comparison-notes { grid-template-columns: 1fr; gap: 20px; } }
-@media (max-width: 600px) { .app-shell { padding: 0 16px; } .site-header { height: 65px; } .brand { font-size: 11px; } .brand-divider { margin: 0 3px; } .fixture-pill { font-size: 8px; max-width: 110px; line-height: 1.5; } .hero { padding: 30px 0; } .hero-description { font-size: 12px; } .view-switch { width: 100%; justify-content: space-between; } .view-switch button { padding: 9px 10px; font-size: 10px; } .toolbar-actions { width: 100%; justify-content: space-between; } .interaction-hint { font-size: 10px; line-height: 1.6; align-items: start; } .interaction-hint > span { display: none; } .share-card { padding: 18px 14px; } .card-header h3 { font-size: 23px; } .total-row > strong { font-size: 37px; } .eyebrow { font-size: 8px; } .share-row { font-size: 11px; gap: 5px; } .change-items { gap: 8px; } .change-items > div > span { font-size: 8px; } .change-items strong { font-size: 12px; } .change-items small { font-size: 7px; } .comparison-notes ol { grid-template-columns: 1fr; gap: 18px; } .comparison-notes h2 { max-width: none; } .site-footer { font-size: 8px; } }
+@media (max-width: 1199px) { .app-shell { max-width: 880px; padding: 0 28px; } .comparison-grid { grid-template-columns: minmax(0, 700px); justify-content: center; } .studio-toolbar { flex-wrap: wrap; } .total-row > strong { font-size: 40px; } .comparison-notes { grid-template-columns: 1fr; gap: 20px; } }
+@media (max-width: 600px) { .app-shell { padding: 0 16px; } .site-header { height: 65px; } .brand { font-size: 11px; } .brand-divider { margin: 0 3px; } .fixture-pill { font-size: 8px; max-width: 110px; line-height: 1.5; } .view-switch { width: 100%; justify-content: space-between; } .view-switch button { padding: 9px 10px; font-size: 10px; } .toolbar-actions { width: 100%; justify-content: space-between; } .interaction-hint { font-size: 10px; line-height: 1.6; align-items: start; } .interaction-hint > span { display: none; } .share-card { padding: 18px 14px; } .card-header h3 { font-size: 23px; } .total-row > strong { font-size: 37px; } .eyebrow { font-size: 8px; } .share-row { font-size: 11px; gap: 5px; } .change-items { gap: 8px; } .change-items > div > span { font-size: 8px; } .change-items strong { font-size: 12px; } .change-items small { font-size: 7px; } .comparison-notes ol { grid-template-columns: 1fr; gap: 18px; } .comparison-notes h2 { max-width: none; } .site-footer { font-size: 8px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0s !important; animation-duration: 0s !important; } }
 
 .grouping-explanation { margin-top: 14px; padding: 10px 12px; border-left: 2px solid #91ac9a; background: #eaf0e8; font-size: 11px; line-height: 1.7; color: #5c7462; }
@@ -155,8 +149,6 @@ select { color: inherit; }
 .matrix-footnotes { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; font-size: 10px; line-height: 1.8; color: #86917f; margin-top: 14px; }
 .matrix-footnotes code { font-size: 10px; color: #627c62; }
 @media (max-width: 600px) { .matrix-footnotes { grid-template-columns: 1fr; gap: 8px; } .matrix-intro { font-size: 11px; } .library-matrix { min-width: 830px; } }
-
-.matrix-jump { display: inline-block; font-size: 11px; color: #3f7b60; text-decoration: underline; text-underline-offset: 3px; margin-top: 12px; }
 
 .matrix-scroll-hint { font-size: 10px; color: #84917a; margin: -5px 0 12px; }
 .library-matrix th:first-child { position: sticky; left: 0; z-index: 1; border-right: 1px solid #e8ece4; }
