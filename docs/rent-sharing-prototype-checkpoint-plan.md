@@ -1,77 +1,93 @@
-# Rent sharing: working prototype checkpoint plan
+# Rent sharing: interactive share-image comparison plan
 
-Companion: [Meeting prototype review guide](rent-sharing-prototype-review-guide.md). This plan builds on the [product brief](rent-sharing-brief.md) and [MVP plan](rent-sharing-mvp-implementation-plan.md).
+Companion: [Prototype comparison review guide](rent-sharing-prototype-review-guide.md). Background: [product brief](rent-sharing-brief.md) and [MVP plan](rent-sharing-mvp-implementation-plan.md).
 
 ## Goal and boundary
 
-Build a runnable browser prototype that lets the next meeting discuss the actual monthly rent workflow, contribution rules, interactive Sankey, grouped branches, and shareable output. It should work with realistic data on a laptop and phone. The repository currently contains documents but no app code, so scaffolding is part of the work.
+Compare three runnable versions of the same shareable expense card, using Apache ECharts, Nivo (`@nivo/sankey`), and Plotly.js. Open the fixture immediately, click the card to change its presentation, explore each package's native animation and interactions, and download a static PNG. Package selection follows hands-on review.
 
-The prototype uses one household, one currency, monthly rent, browser-local data, no login, and full data export/import. It excludes reminders, ad hoc splits, nonmonthly expense schedules, payments, and synchronization. It is a discussion artifact, not a commitment to a public launch. The existing decision to launch the eventual web MVP without a prelaunch team review remains in place; the checkpoints below are for steering the prototype during implementation.
+This is a local, fixture-backed interaction study. It deliberately narrows the prototype to expense allocation and image presentation; it does not change the broader brief or MVP scope. Household setup, data entry, contribution rules and tracking, monthly record creation/history, persistence, data backup/import, accounts, and deployment are deferred. Users do not need to prepare or enter any data. The eventual MVP's launch policy is unchanged; these checkpoints steer the comparison prototype.
 
-**Working assumption to confirm at checkpoint 1:** Roommates send their shares to the coordinator before the coordinator pays the landlord. Implement one money flow in the prototype. The alternative reimbursement flow can be discussed with the same examples, but should not silently share its status wording or calculations.
+## Shared fixture
 
-## Phase 1 — Scenario and money-rule card
+Use October 2026 and a fictional household with the same 40/35/25 split across every expense and both months. Snapshot date: October 4, 2026.
 
-**Deliverable:** A one-page scenario card with a three-roommate rent month, unequal shares, one partial contribution, an edited share after payment, and the precise meaning of “recorded,” “remaining,” and “fully received.” Include a simple flow sketch and a second, unimplemented reimbursement example for comparison. Use integer minor currency units for calculations and define where rounding differences go.
+| Expense | October | September | Increase |
+| --- | ---: | ---: | ---: |
+| Rent | NT$30,000 | NT$30,000 | NT$0 |
+| Electricity | NT$2,400 | NT$1,800 | NT$600 |
+| Water | NT$600 | NT$500 | NT$100 |
+| Internet | NT$1,000 | NT$1,000 | NT$0 |
+| Groceries | NT$6,000 | NT$4,700 | NT$1,300 |
+| **Total** | **NT$40,000** | **NT$38,000** | **NT$2,000 (+5.3%)** |
 
-**Dependencies:** The current brief and one realistic household example. No application code depends on the answer yet.
+Wen's share is NT$16,000 (40%, +NT$800); Jonathan's is NT$14,000 (35%, +NT$700); Mei's is NT$10,000 (25%, +NT$500). These amounts describe allocated expenses, not received payments. Use integer NT$ values; this fixture has no fractional allocations or rounding discrepancy. Keep fixtures immutable and create separate renderer inputs and presentation state.
 
-**Completion condition:** Every displayed amount can be calculated by hand; the scenario states who pays whom, when, and how corrections differ from refunds.
+## Comparison behavior
 
-### Checkpoint 1: choose the story the prototype tells
+Use React, TypeScript, Vite, npm, and Tailwind CSS. Show three equal-sized cards together on wide screens and provide a single-renderer view for closer inspection and phone use. Display package names, installed versions, native capabilities, and limitations outside the exported cards.
 
-- **Implementer prepares:** The card and two worked examples with their exact totals, plus any unresolved rule choices.
-- **User tries or decides:** Explain the flow back in their own words and choose collection before landlord payment or reimbursement afterward. Check whether the status words match the household's real language. About 10 minutes.
-- **Feedback that changes Phase 2:** A different payer flow, interpretation of partial payments, or rule for excess contributions changes calculations and labels. Update the card before building those rules.
-- **Work that can continue:** Project scaffolding, visual layout, and sample-data setup. Money calculations and status labels wait for this response.
+- Render total → expenses → roommates with the same content, colors, and dimensions. The detailed utilities mode adds Utilities → Electricity / Water / Internet → roommates, while rent and groceries continue directly to roommates. Category ribbons retain their color throughout the path. Allow native layout differences to remain visible.
+- Preserve package-native animation, tooltips, connected hover highlighting, and dragging where supported. Do not implement substitute chart animation or dragging. ECharts supports initial reveal and dragging; Nivo supports spring updates but no native dragging; Plotly supports dragging and snapping. Plotly's general animation API does not smoothly interpolate Sankey frames, while native redraw fades, node transitions, and snapping may still occur: [animation API](https://plotly.com/javascript/animations/), [native renderer](https://github.com/plotly/plotly.js/blob/master/src/traces/sankey/render.js).
+- Clicking a category, ribbon, or roommate pins an exact breakdown for that renderer. Click it again to clear or another target to replace it. Use native emphasis APIs where exposed; label application-provided selection and grouping separately from native capabilities.
+- Cycle individual expenses → grouped Utilities · NT$4,000 → Utilities with its three bill nodes → individual expenses using an on-card control or the comparison toolbar. In detailed mode, total flows to rent, utilities and groceries; utilities flows to electricity, water and internet, each then split among roommates. Do not count both the aggregate and bills as new expenses. Click the aggregate in grouped mode to show details; in detailed mode it selects the exact bill breakdown. Synchronize grouping and month-comparison detail expansion across variants. Clear selections that disappear under grouping.
+- Keep hover, selection, and native dragged positions independent per renderer. Preserve native positions when switching views; regrouping switches directly to a fresh, reconciled layout. Indexed native transitions must not morph unrelated categories or roommates; grouping uses no geometry tween. Hover, dragging, and replay retain native motion. Reset restores the default grouping, detail panel, selections, and positions. Replay clears dragged positions and remounts the charts to show initial rendering while retaining the current grouping and selections.
+- Keep exact roommate shares visible in every presentation. Provide text allocations and keyboard selection/grouping controls. Respect reduced motion: disable ECharts reveal/state motion and Nivo springs; rebuild Plotly from a first render and use perpendicular dragging to avoid animated redraws and snapping. Provide a Reduce motion control for comparison; OS reduced-motion preferences always take precedence.
+- Each PNG captures the complete selected card after its SVG stops changing, including exact shares, month, snapshot date, and any selected breakdown. Exclude comparison controls, tooltips, grouping controls, and focus outlines. Export a static image; recipients cannot interact with the PNG. Lock presentation controls during capture and expose a retryable export error.
 
-## Phase 2 — Usable monthly flow
+## Phase 1 — Three working renderers
 
-**Deliverable:** A local web app with editable household members and shares, rent month and due date, a review of the total, contribution entry and correction, “create next month,” persistent browser-local history, and an accessible amount/status list. Include a clear local-data notice and a way to reset sample data. Start with the agreed scenario preloaded for quick demonstration.
+**Deliverable:** A local comparison app that immediately renders the fixture in all three packages, plus shared total/share checks and explicit package capability labels.
 
-**Dependencies:** Checkpoint 1 for money rules and wording. The app shell can be built earlier.
+**Dependencies:** The fixture and existing category-color mockups; no data-entry workflow or payment-model decision is required.
 
-**Completion condition:** In a fresh browser, the coordinator can enter or load a household, create a month, record a partial contribution, reload without losing data, correct the entry, and create the next month without carrying over contributions. The implementer verifies exact reconciliation, invalid input, and the agreed edit/refund cases with focused tests.
+**Completion condition:** Both months reconcile; every chart conserves flow; all individual shares agree across renderers and text. Cards render on desktop and phone without missing labels or chart failures. Initial render, native tooltips, hover, and supported dragging are available for comparison.
 
-### Checkpoint 2: use the monthly task without coaching
+### Checkpoint 1: compare the first render
 
-- **Implementer prepares:** A runnable local URL, sample and blank starting states, a reset action, and the scenario card.
-- **User tries:** Create a month, change one share, record and correct a partial contribution, then create the next month. Say what you expect to happen before each action. About 10–15 minutes.
-- **Feedback that changes Phase 3:** Missing fields, confusing status words, or an incorrect mental model of current-month versus future defaults should be resolved in the flow before adding the Sankey.
-- **Work that can continue:** Sankey rendering experiments using fixed sample data. Binding the diagram to final status wording waits for resolved feedback.
+- **Implementer prepares:** A runnable local URL, all three variants, package/version labels, reset/replay controls, and the ready-loaded fixture.
+- **User tries:** Follow rent to each roommate, replay rendering, compare labels and tooltips, and try native dragging where supported. About 10 minutes. No example or data entry is needed.
+- **Feedback that changes Phase 2:** Incorrect amounts, unreadable labels, missing capabilities, or a misleading capability description must be resolved before finalizing interactions. Different native layouts are comparison findings rather than automatic defects.
+- **Work that can continue:** Export experiments and shared presentation controls. Final interaction polish waits for material findings.
 
-## Phase 3 — Interactive Sankey
+## Phase 2 — Direct presentation interaction
 
-**Deliverable:** A Sankey driven by the same data and calculations as the text list. Show shares and recorded/remaining amounts with exact values available on selection or focus. Let the user collapse selected branches into “Others,” display the aggregate and member count, and expand the group again. Keep the underlying data unchanged and let keyboard users perform the same inspection and grouping actions.
+**Deliverable:** Per-renderer click selection and exact breakdowns; synchronized utilities grouping, comparison-detail expansion, reset, and replay; keyboard controls and phone inspection.
 
-**Dependencies:** Phase 2 data model and resolved checkpoint 2 findings.
+**Dependencies:** The three renderers and resolved checkpoint 1 findings.
 
-**Completion condition:** Individual branches, the “Others” aggregate, and the text list reconcile exactly for unequal shares and partial contributions. Collapsing and expanding preserve the stored records. The implementer checks narrow phone width, long and duplicate labels, zero/fully received states, and keyboard operation.
+**Completion condition:** Grouping and expansion preserve all amounts. Selecting and clearing nodes/ribbons works in each package. Grouping removes stale selections safely; native positions remain local to their renderer. Keyboard users can inspect the same allocations. Reduced-motion mode avoids animated presentation changes.
 
-### Checkpoint 3: see whether the diagram explains the money
+### Checkpoint 2: repeat the same tasks in each package
 
-- **Implementer prepares:** A live diagram with at least three distinct states: unpaid, partially received, and fully received; one crowded example where “Others” helps. Provide the same figures in the text list.
-- **User tries:** Without reading the list first, identify each person's share and remaining amount, collapse two branches, explain what “Others” means, and expand it. Repeat at phone width. About 10–15 minutes.
-- **Feedback that changes Phase 4:** Misread flow direction, hidden individual obligations, or an unclear aggregate changes the labels, grouping control, or export composition before image export is finalized.
-- **Work that can continue:** File export/import plumbing and static image rendering experiments. Final chart composition waits for resolved feedback.
+- **Implementer prepares:** The same fixture and tasks in all three variants, a text breakdown, capability notes, and phone-sized views.
+- **User tries:** Click Jonathan, inspect Rent → Jonathan (NT$10,500), select another category, clear selection, group utilities, expand the aggregate, collapse/expand the increase explanation, and reset. Repeat using keyboard controls and on a phone. Compare responsiveness, discoverability, hover, drag, and motion. About 10–15 minutes.
+- **Feedback that changes Phase 3:** Broken or confusing interactions, incorrect breakdowns, motion discomfort, or unclear grouping must be resolved before reviewing final exports. Native feature gaps remain labeled rather than filled with custom animations.
+- **Work that can continue:** PNG capture and export-error handling. Final export composition waits for material findings.
 
-## Phase 4 — Portable data and meeting-ready output
+## Phase 3 — Static image export comparison
 
-**Deliverable:** Full data export and import, an import preview with an explicit replace-or-cancel choice for existing browser data, and a dated chart image export with a preview. The image contains the rent month, due date, recipient, totals, status, and each person's exact amount in readable text even when the Sankey shows “Others.” Prepare a short demo script and one backup sample file. The prototype can run locally for an in-person meeting; if others need remote access, arrange a shareable web preview separately.
+**Deliverable:** PNG download and preview for each variant, including grouped and selected states, plus a short meeting demo and package-comparison notes.
 
-**Dependencies:** Phase 3 diagram and agreed money terminology. Image composition depends on checkpoint 3 findings.
+**Dependencies:** Reviewed interactions and settled chart rendering.
 
-**Completion condition:** Exporting and importing into a fresh browser reproduces the household, months, shares, and contributions. Invalid files are rejected without altering saved data. Image amounts match the app; the image is legible on a phone without interaction. The implementer verifies the round trip and a representative end-to-end path.
+**Completion condition:** All three PNG downloads succeed. Exports match the visible card's fixture and presentation, omit transient controls/tooltips, and show all exact roommate shares and the dated snapshot. Images remain understandable on a phone without interaction.
 
-### Checkpoint 4: rehearse the meeting
+### Checkpoint 3: compare the shared images
 
-- **Implementer prepares:** A runnable build, sample file, exported image, and a 5-minute demo path; confirm the target meeting laptop/browser can run it.
-- **User tries:** Run the demo without coaching, hand the image to someone unfamiliar with the project, and ask them to state one person's share and remaining amount. Import the sample file into a fresh browser. About 15–20 minutes.
-- **Feedback that changes the meeting artifact:** Any broken task, misunderstood amount, unreadable image, or uncertain import result gets fixed and rehearsed again. Editorial preferences can be prioritized for later iteration.
-- **Work that can continue:** Meeting notes and discussion prompts. The prototype is ready for the meeting when the critical path works and the remaining questions are listed explicitly.
+- **Implementer prepares:** Three PNGs, a runnable comparison build, and a demo: open fixture → replay → select Jonathan → group/expand utilities → download each card.
+- **User tries:** Customize and download each variant, compare phone readability, then ask an unfamiliar recipient to identify their share and explain the increase. About 10 minutes.
+- **Feedback that changes the result:** Fix inaccurate, misleading, clipped, or unreadable output and repeat the task. Record a package preference with reasons; do not silently choose a production package before review.
+- **Work that can continue:** Meeting notes and recommendation drafting. The study is ready when its comparison tasks work and remaining differences are explicit.
 
-## Verification and feedback handling
+## Verification and feedback
 
-The implementer owns calculation tests, persistence and import/export round trips, keyboard checks, responsive checks, and a clean demo setup. At each checkpoint, record feedback as **task → expected result → actual result → impact**, fix material issues, and return the revised artifact for the same task when needed. A checkpoint is complete when its decision or finding is reflected in the working prototype, not merely when someone has viewed it.
+The implementer owns fixture reconciliation and reversible grouping tests, TypeScript checks, production build, browser checks of native node/ribbon interaction and dragging, keyboard inspection, responsive layouts, reduced motion, and all three PNG downloads. Avoid persistence and backup/restore tests because those features are outside this study.
 
-The next meeting should use the prototype to validate or revisit the chosen money flow, assess the Sankey and what the exported image reveals, and decide the next slice of work. Do not add the excluded features to make the demo look more complete.
+Record findings as **task → expected result → actual result → impact**. A checkpoint is complete when material findings are reflected in the running comparison, not just when someone has viewed it. Keep native limitations visible and reserve package choice for hands-on review.
+
+## Package comparison evidence
+
+Use the comparison table below the cards to review GitHub stars, latest default-branch commit age, license, extensibility, performance tradeoffs, load cost, native motion/dragging, framework fit, accessibility, and PNG integration. Stats show a dated, refreshable snapshot with source links; repository-wide activity does not prove Sankey-specific maintenance. Performance notes distinguish architectural tradeoffs and measured build sizes from runtime benchmarks, which have not been collected.
+
+During checkpoint 2, cycle all three grouping modes in all three variants. Expect a direct layout switch: electricity 2,400 + water 600 + internet 1,000 becomes Utilities 4,000, with utility ribbons of 1,600 / 1,400 / 1,000. The household stays at 40,000 and roommate totals stay 16,000 / 14,000 / 10,000. Labels must never travel from unrelated categories into roommates. Use Replay render separately to compare native initial motion.
