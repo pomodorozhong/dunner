@@ -253,7 +253,7 @@ function PlotlyView(props: Props) {
       if (current.reducedMotion && plot.current) library.purge(plot.current)
       const draw = fresh ? library.newPlot : library.react
       const result = await draw(element, [{
-        type: 'sankey', arrangement: current.reducedMotion ? 'perpendicular' : 'snap', valueformat: ',.0f', valuesuffix: ' NT$',
+        type: 'sankey', arrangement: 'snap', valueformat: ',.0f', valuesuffix: ' NT$',
         node: {
           label: graph.nodes.map(node => node.label),
           customdata: graph.nodes.map(node => node.id),

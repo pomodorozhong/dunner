@@ -28,7 +28,7 @@ Cycle grouping from the toolbar or card: **individual expenses → grouped utili
 
 Use **Text breakdown & keyboard controls** for equivalent node/ribbon inspection. PNG download captures the complete settled card with its exact shares and selected breakdown; controls and tooltips are excluded. **Preview PNG** displays the actual downloaded image.
 
-The prototype respects OS reduced-motion preferences. **Reduce motion** also lets you try this mode in the comparison toolbar. ECharts and Nivo motion is disabled; Plotly redraws from an initial render and uses perpendicular dragging to avoid animated fades, layout morphs, and snapping. The Recharts and visx adapters do not add chart animation; Ant Design Charts animation is disabled in this comparison. An OS reduced-motion preference always takes precedence.
+The prototype respects OS reduced-motion preferences. **Reduce motion** also lets you try this mode in the comparison toolbar. ECharts and Nivo motion is disabled; Plotly redraws from an initial render to avoid animated redraw fades and layout morphs. Plotly's native drag snapping remains enabled in both motion modes. The Recharts and visx adapters do not add chart animation; Ant Design Charts animation is disabled in this comparison. An OS reduced-motion preference always takes precedence.
 
 The card is interactive in the browser; its downloaded PNG is static. Fixtures and presentation changes are not saved. Review the [checkpoint plan](docs/rent-sharing-prototype-checkpoint-plan.md) and [comparison guide](docs/rent-sharing-prototype-review-guide.md).
 
