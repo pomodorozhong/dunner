@@ -151,3 +151,6 @@ select { color: inherit; }
 
 .matrix-scroll-hint { font-size: 10px; color: #84917a; margin: -5px 0 12px; }
 .library-matrix th:first-child { position: sticky; left: 0; z-index: 1; border-right: 1px solid #e8ece4; }
+.chart-loading { display: grid; place-items: center; color: #879486; font-size: 11px; }
+.library-matrix { min-width: 1500px; }
+.library-matrix th:first-child { width: 15%; }

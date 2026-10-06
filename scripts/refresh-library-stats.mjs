@@ -1,6 +1,13 @@
 import { writeFile, rename } from 'node:fs/promises'
 
-const repositories = { echarts: 'apache/echarts', nivo: 'plouc/nivo', plotly: 'plotly/plotly.js' }
+const repositories = {
+  echarts: 'apache/echarts',
+  nivo: 'plouc/nivo',
+  plotly: 'plotly/plotly.js',
+  recharts: 'recharts/recharts',
+  visx: 'airbnb/visx',
+  'ant-design': 'ant-design/ant-design-charts',
+}
 async function github(path) {
   const response = await fetch(`https://api.github.com/repos/${path}`, {
     headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'dunner-local-comparison' },

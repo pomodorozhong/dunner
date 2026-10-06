@@ -5,18 +5,21 @@ import Chart, { type ChartHandle, type Presentation } from './charts'
 import { allocation, amount, buildGraph, expenses, money, nextGrouping, people, previousTotal, selectionDetails, total, type Engine, type Graph, type GroupingMode } from './fixture'
 import { nextFrame, useMedia } from './hooks'
 
-const engines: Engine[] = ['echarts', 'nivo', 'plotly']
+const engines: Engine[] = ['echarts', 'nivo', 'plotly', 'recharts', 'visx', 'ant-design']
 const info = {
   echarts: { name: 'Apache ECharts', package: 'echarts', native: 'Reveal animation · connected hover · draggable nodes', limitation: 'Native initial reveal; grouping redraws the layout.', link: 'https://echarts.apache.org/examples/en/index.html#chart-type-sankey' },
   nivo: { name: 'Nivo', package: '@nivo/sankey', native: 'Spring motion · connected hover · node & ribbon tooltips', limitation: 'Native hover springs; grouping switches layouts. No built-in node dragging.', link: 'https://nivo.rocks/sankey/' },
   plotly: { name: 'Plotly.js', package: 'plotly.js-dist-min', native: 'Node & ribbon hover · draggable nodes with snapping', limitation: 'No smooth Sankey frames via Plotly.animate; grouping switches layouts. Native snapping remains.', link: 'https://plotly.com/javascript/animations/' },
+  recharts: { name: 'Recharts', package: 'recharts', native: 'SVG Sankey · accessibility layer · custom nodes and ribbons', limitation: 'This adapter adds connected hover; Recharts has no built-in Sankey dragging.', link: 'https://recharts.github.io/en-US/api/Sankey/' },
+  visx: { name: 'visx Sankey', package: '@visx/sankey', native: 'React SVG primitives · configurable d3-sankey layout', limitation: 'The package exposes layout primitives; this adapter adds hover and selection. No native dragging.', link: 'https://airbnb.io/visx/sankey/' },
+  'ant-design': { name: 'Ant Design Charts', package: '@ant-design/plots', native: 'G2 Sankey layout · native node and ribbon tooltips', limitation: 'This adapter supplies app selection; native node dragging is not provided.', link: 'https://ant-design-charts.antgroup.com/en/components/plots/sankey' },
 }
 const groupingInfo = {
   individual: { label: 'Individual expenses', action: 'Group utilities' },
   grouped: { label: 'Utilities grouped', action: 'Show utility details' },
   detailed: { label: 'Utilities with individual bills', action: 'Show individual expenses' },
 }
-const emptySelection: Record<Engine, string | null> = { echarts: null, nivo: null, plotly: null }
+const emptySelection: Record<Engine, string | null> = { echarts: null, nivo: null, plotly: null, recharts: null, visx: null, 'ant-design': null }
 
 class ChartBoundary extends Component<{ children: ReactNode; onError: (message: string) => void }, { error: string | null }> {
   state: { error: string | null } = { error: null }
@@ -33,7 +36,10 @@ export default function App() {
   const [initialAnimation, setInitialAnimation] = useState(true)
   const [selections, setSelections] = useState(emptySelection)
   const [exporting, setExporting] = useState<Engine | null>(null)
-  const presentations = useRef<Record<Engine, Presentation>>({ echarts: { positions: new Map() }, nivo: { positions: new Map() }, plotly: { positions: new Map() } })
+  const presentations = useRef<Record<Engine, Presentation>>({
+    echarts: { positions: new Map() }, nivo: { positions: new Map() }, plotly: { positions: new Map() },
+    recharts: { positions: new Map() }, visx: { positions: new Map() }, 'ant-design': { positions: new Map() },
+  })
   const systemReducedMotion = useMedia('(prefers-reduced-motion: reduce)')
   const [motionOff, setMotionOff] = useState(false)
   const reducedMotion = systemReducedMotion || motionOff
@@ -108,14 +114,14 @@ export default function App() {
           </div>
         </section>
         <p id="grouping-status" className="grouping-explanation" role="status"><strong>{groupingInfo[grouping].label} · {grouping === 'individual' ? '1' : grouping === 'grouped' ? '2' : '3'} / 3.</strong> {grouping === 'detailed' ? 'Utilities stays visible and branches into Electricity, Water, and Internet before reaching the roommates.' : 'Cycle through individual expenses, grouped utilities, and utilities with individual bills.'} Utilities = 2,400 + 600 + 1,000 = NT$4,000. Total and shares stay unchanged. Layouts switch directly; Replay tries native initial motion.</p>
-        <div className="interaction-hint flex items-center justify-between gap-3"><p><span aria-hidden="true">↗</span> Click a node or ribbon to inspect it. Hover to try native highlights. Drag nodes where supported.</p><span>{reducedMotion ? 'Reduced motion on' : 'Native motion on'}</span></div>
+        <div className="interaction-hint flex items-center justify-between gap-3"><p><span aria-hidden="true">↗</span> Click a node or ribbon to inspect it. Hover for renderer-specific highlights or tooltips. Drag nodes where supported.</p><span>{reducedMotion ? 'Reduced motion on' : 'Native motion on'}</span></div>
 
         {narrow && <nav className="renderer-navigation" aria-label="Sankey renderer navigation">
           <button type="button" aria-controls="sankey-renderers" aria-label="Previous Sankey renderer" disabled={!!exporting || activeVariant === 0} onClick={() => scrollToVariant(activeVariant - 1)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H5m6 6-6-6 6-6" /></svg></button>
-          <span aria-live="polite" aria-atomic="true"><strong>{String(activeVariant + 1).padStart(2, '0')} / 03</strong>{info[engines[activeVariant]].name}</span>
+          <span aria-live="polite" aria-atomic="true"><strong>{String(activeVariant + 1).padStart(2, '0')} / 06</strong>{info[engines[activeVariant]].name}</span>
           <button type="button" aria-controls="sankey-renderers" aria-label="Next Sankey renderer" disabled={!!exporting || activeVariant === engines.length - 1} onClick={() => scrollToVariant(activeVariant + 1)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6" /></svg></button>
         </nav>}
-        {narrow && <p className="renderer-scroll-hint">Swipe or scroll horizontally to compare all three Sankeys.</p>}
+        {narrow && <p className="renderer-scroll-hint">Swipe or scroll horizontally to compare all six Sankeys.</p>}
 
         <section ref={comparisonRef} id="sankey-renderers" className={`comparison-grid ${exporting ? 'exporting' : ''}`} aria-label="Sankey package comparison" tabIndex={narrow ? 0 : undefined} onScroll={updateActiveVariant}>
           {engines.map(engine => <Variant key={engine} engine={engine} graph={graph} grouping={grouping} expanded={expanded} epoch={epoch} initialAnimation={initialAnimation} presentation={presentations.current[engine]}
@@ -164,7 +170,7 @@ function Variant(props: VariantProps) {
       await chartHandle.current.prepareExport()
       const url = await toPng(card.current!, {
         pixelRatio: 2, backgroundColor: '#ffffff', skipFonts: true, cacheBust: false,
-        filter: node => !(node instanceof Element && (node.hasAttribute('data-export-ignore') || node.matches('.export-tooltip, .hoverlayer, .modebar, [role="tooltip"]'))),
+        filter: node => !(node instanceof Element && (node.hasAttribute('data-export-ignore') || node.matches('.export-tooltip, .hoverlayer, .modebar, .g2-tooltip, .antv-tooltip, .recharts-tooltip-wrapper, [role="tooltip"]'))),
       })
       setPng(url)
       const anchor = document.createElement('a')
@@ -192,7 +198,7 @@ function Variant(props: VariantProps) {
     </div>
     <div className="variant-actions"><button className="download-button" disabled={readyKey !== renderKey || !!error || props.locked} onClick={download}>{busy ? 'Preparing PNG…' : 'Download PNG'}<span aria-hidden="true">↓</span></button>{png && <button className="text-button" onClick={() => setPreview(true)}>Preview PNG</button>}</div>
     {error && <p role="alert" className="error-message">{error} <button onClick={() => setError(null)}>Dismiss</button></p>}
-    <div className="capability-note"><span className="small-tag">NATIVE</span><p>{metadata.limitation} <a href={metadata.link} target="_blank" rel="noreferrer">Docs ↗</a></p><span className="small-tag">SHARED APP</span><p>Click selection, exact breakdown, grouping, and PNG export. No added chart animation or dragging.</p></div>
+    <div className="capability-note"><span className="small-tag">NATIVE</span><p>{metadata.limitation} <a href={metadata.link} target="_blank" rel="noreferrer">Docs ↗</a></p><span className="small-tag">SHARED APP</span><p>Click selection, exact breakdown, grouping, and PNG export work the same across all six renderers.</p></div>
     <details className="text-inspector"><summary>Text breakdown & keyboard controls</summary><div className="inspector-body"><p>These buttons select the same nodes as the chart. Tab to a button, then press Enter or Space. Select again to clear.</p><div className="inspector-nodes">{graph.nodes.map(node => <button key={node.id} aria-pressed={selected === node.id} disabled={props.locked} onClick={() => props.onSelect(node.id)}><i style={{ backgroundColor: node.color }} />{node.label}<span>{money(node.value)}</span></button>)}</div><label htmlFor={`ribbon-${engine}`}>Inspect an exact ribbon</label><select id={`ribbon-${engine}`} value={graph.links.some(link => link.id === selected) ? selected! : ''} disabled={props.locked} onChange={event => { if (event.target.value) props.onSelect(event.target.value); else if (selected) props.onSelect(selected) }}><option value="">Choose a ribbon</option>{graph.links.map(link => <option value={link.id} key={link.id}>{graph.nodes.find(n => n.id === link.source)!.label} → {graph.nodes.find(n => n.id === link.target)!.label}: {money(link.value)}</option>)}</select><table><caption>October category allocations · NT$</caption><thead><tr><th>Expense</th>{people.map(person => <th key={person.id}>{person.label}</th>)}</tr></thead><tbody>{expenses.map(item => <tr key={item.id}><th>{item.label}</th>{people.map(person => <td key={person.id}>{amount(allocation(item.october, person.percent))}</td>)}</tr>)}</tbody></table></div></details>
     <p className="sr-only" role="status">{details ? `${metadata.name}: ${details.title}, ${money(details.value)}` : `${metadata.name}: no selection`}</p>
     {preview && png && <PngPreview engine={engine} name={metadata.name} png={png} onClose={() => setPreview(false)} />}

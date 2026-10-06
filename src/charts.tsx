@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type RefObject } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, type RefObject } from 'react'
 import { Sankey, type CustomSankeyLayerProps } from '@nivo/sankey'
 import * as echarts from 'echarts/core'
 import { SankeyChart } from 'echarts/charts'
@@ -12,7 +12,7 @@ echarts.use([SankeyChart, TooltipComponent, SVGRenderer])
 
 export type ChartHandle = { prepareExport: () => Promise<void> }
 export type Presentation = { positions: Map<string, { x: number; y: number }> }
-type Props = {
+export type ChartProps = {
   engine: Engine
   graph: Graph
   selected: string | null
@@ -25,6 +25,7 @@ type Props = {
   handle: RefObject<ChartHandle | null>
   presentation: Presentation
 }
+type Props = ChartProps
 const chartHeight = 350
 const pause = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms))
 
@@ -36,7 +37,11 @@ export async function waitForChartIdle(element: HTMLElement) {
   const deadline = performance.now() + 8000
   while (performance.now() < deadline) {
     await pause(50)
-    const current = [...element.querySelectorAll('svg')].map(svg => svg.outerHTML).join('')
+    const svgs = [...element.querySelectorAll('svg')]
+    const canvases = [...element.querySelectorAll('canvas')]
+    const current = svgs.length
+      ? svgs.map(svg => svg.outerHTML).join('')
+      : canvases.map(canvas => `${canvas.width}x${canvas.height}`).join('|')
     stable = current && current === previous ? stable + 1 : 0
     previous = current
     if (stable >= 6) return
@@ -328,8 +333,14 @@ async function applyPlotlySelection(library: typeof PlotlyTypes, plot: PlotlyTyp
   } as unknown as PlotlyTypes.Data)
 }
 
+const RechartsView = lazy(() => import('./chart-adapters/RechartsView'))
+const VisxView = lazy(() => import('./chart-adapters/VisxView'))
+const AntDesignView = lazy(() => import('./chart-adapters/AntDesignView'))
+
 export default function Chart(props: Props) {
   if (props.engine === 'echarts') return <EChartsView {...props} />
   if (props.engine === 'nivo') return <NivoView {...props} />
-  return <PlotlyView {...props} />
+  if (props.engine === 'plotly') return <PlotlyView {...props} />
+  const Renderer = props.engine === 'recharts' ? RechartsView : props.engine === 'visx' ? VisxView : AntDesignView
+  return <Suspense fallback={<div className="chart-host chart-loading" role="status">Loading renderer…</div>}><Renderer {...props} /></Suspense>
 }
