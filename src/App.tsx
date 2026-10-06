@@ -15,9 +15,9 @@ const info = {
   'ant-design': { name: 'Ant Design Charts', package: '@ant-design/plots', native: 'G2 Sankey layout · native node and ribbon tooltips', limitation: 'This adapter supplies app selection; native node dragging is not provided.', link: 'https://ant-design-charts.antgroup.com/en/components/plots/sankey' },
 }
 const groupingInfo = {
-  individual: { label: 'Individual expenses', action: 'Group utilities' },
-  grouped: { label: 'Utilities grouped', action: 'Show utility details' },
-  detailed: { label: 'Utilities with individual bills', action: 'Show individual expenses' },
+  individual: { label: 'Individual expenses', step: 1 },
+  grouped: { label: 'Utilities grouped', step: 2 },
+  detailed: { label: 'Utilities with individual bills', step: 3 },
 }
 const emptySelection: Record<Engine, string | null> = { echarts: null, nivo: null, plotly: null, recharts: null, visx: null, 'ant-design': null }
 
@@ -40,9 +40,7 @@ export default function App() {
     echarts: { positions: new Map() }, nivo: { positions: new Map() }, plotly: { positions: new Map() },
     recharts: { positions: new Map() }, visx: { positions: new Map() }, 'ant-design': { positions: new Map() },
   })
-  const systemReducedMotion = useMedia('(prefers-reduced-motion: reduce)')
-  const [motionOff, setMotionOff] = useState(false)
-  const reducedMotion = systemReducedMotion || motionOff
+  const reducedMotion = useMedia('(prefers-reduced-motion: reduce)')
   const narrow = useMedia('(max-width: 1199px)')
   const comparisonRef = useRef<HTMLElement>(null)
   const graph = useMemo(() => buildGraph(grouping), [grouping])
@@ -105,15 +103,14 @@ export default function App() {
           <p className="eyebrow">02 · RENDERERS</p>
           <h2 id="sankey-comparison-title">Sankey comparison</h2>
         </header>
-        <section className="studio-toolbar" aria-label="Comparison controls">
+        <section className="studio-toolbar sticky top-0 z-50 shadow-sm" aria-label="Comparison controls">
           <div className="toolbar-actions flex flex-wrap items-center gap-2">
-            <button className="control-button" aria-describedby="grouping-status" disabled={!!exporting} onClick={() => changeGrouping(nextGrouping(grouping))}>{groupingInfo[grouping].action}</button>
+            <button className="control-button whitespace-nowrap" aria-describedby="grouping-status" disabled={!!exporting} onClick={() => changeGrouping(nextGrouping(grouping))}>switching grouping <span className="font-mono tabular-nums">({groupingInfo[grouping].step}/3)</span></button>
             <button className="text-button" disabled={!!exporting} onClick={replay}>↻ Replay render</button>
-            <button className="text-button" aria-pressed={reducedMotion} disabled={!!exporting || systemReducedMotion} onClick={() => setMotionOff(value => !value)}>{reducedMotion ? 'Motion off' : 'Reduce motion'}</button>
             <button className="text-button" disabled={!!exporting} onClick={reset}>Reset view</button>
           </div>
         </section>
-        <p id="grouping-status" className="grouping-explanation" role="status"><strong>{groupingInfo[grouping].label} · {grouping === 'individual' ? '1' : grouping === 'grouped' ? '2' : '3'} / 3.</strong> {grouping === 'detailed' ? 'Utilities stays visible and branches into Electricity, Water, and Internet before reaching the roommates.' : 'Cycle through individual expenses, grouped utilities, and utilities with individual bills.'} Utilities = 2,400 + 600 + 1,000 = NT$4,000. Total and shares stay unchanged. Layouts switch directly; Replay tries native initial motion.</p>
+        <p id="grouping-status" className="grouping-explanation" role="status"><strong>{groupingInfo[grouping].label} · {groupingInfo[grouping].step} / 3.</strong> {grouping === 'detailed' ? 'Utilities stays visible and branches into Electricity, Water, and Internet before reaching the roommates.' : 'Cycle through individual expenses, grouped utilities, and utilities with individual bills.'} Utilities = 2,400 + 600 + 1,000 = NT$4,000. Total and shares stay unchanged. Layouts switch directly; Replay tries native initial motion.</p>
         <div className="interaction-hint flex items-center justify-between gap-3"><p><span aria-hidden="true">↗</span> Click a node or ribbon to inspect it. Hover for renderer-specific highlights or tooltips. Drag nodes where supported.</p><span>{reducedMotion ? 'Reduced motion on' : 'Native motion on'}</span></div>
 
         {narrow && <nav className="renderer-navigation" aria-label="Sankey renderer navigation">
@@ -126,7 +123,7 @@ export default function App() {
         <section ref={comparisonRef} id="sankey-renderers" className={`comparison-grid ${exporting ? 'exporting' : ''}`} aria-label="Sankey package comparison" tabIndex={narrow ? 0 : undefined} onScroll={updateActiveVariant}>
           {engines.map(engine => <Variant key={engine} engine={engine} graph={graph} grouping={grouping} expanded={expanded} epoch={epoch} initialAnimation={initialAnimation} presentation={presentations.current[engine]}
             selected={selections[engine]} reducedMotion={reducedMotion} locked={!!exporting}
-            onToggleGroup={() => changeGrouping(nextGrouping(grouping))} onExpand={grouping === 'grouped' ? () => changeGrouping('detailed') : undefined} onToggleDetails={() => setExpanded(value => !value)}
+            onExpand={grouping === 'grouped' ? () => changeGrouping('detailed') : undefined} onToggleDetails={() => setExpanded(value => !value)}
             onSelect={id => setSelections(current => ({ ...current, [engine]: current[engine] === id ? null : id }))}
             onExportState={busy => setExporting(busy ? engine : null)} />)}
         </section>
@@ -142,7 +139,7 @@ type VariantProps = {
   engine: Engine; graph: Graph; grouping: GroupingMode; expanded: boolean; epoch: number; initialAnimation: boolean
   presentation: Presentation
   selected: string | null; reducedMotion: boolean; locked: boolean
-  onToggleGroup: () => void; onExpand?: () => void; onToggleDetails: () => void
+  onExpand?: () => void; onToggleDetails: () => void
   onSelect: (id: string) => void; onExportState: (busy: boolean) => void
 }
 
@@ -187,7 +184,6 @@ function Variant(props: VariantProps) {
       <header className="card-header"><div className="flex items-center justify-between"><span className="eyebrow">MONTHLY HOUSEHOLD EXPENSES</span><span className="card-monogram" aria-hidden="true">d.</span></div><h3>October 2026</h3><div className="total-row"><strong>{money(total)}</strong><button className="delta-pill" aria-label={`Toggle month comparison for ${metadata.name}`} aria-expanded={props.expanded} disabled={props.locked} onClick={props.onToggleDetails}>+5.3%</button></div><p className="total-caption">Household total <span>+{money(total - previousTotal)} vs September</span></p></header>
       <div className="chart-section"><div className="chart-columns" aria-hidden="true"><span>TOTAL</span><span>EXPENSES</span>{props.grouping === "detailed" && <span>UTILITY DETAILS</span>}<span>SHARES</span></div>
         <ChartBoundary key={renderKey} onError={setError}><Chart key={renderKey} initialAnimation={props.initialAnimation} engine={engine} graph={graph} selected={selected} onSelect={props.onSelect} onExpand={props.onExpand} reducedMotion={props.reducedMotion} handle={chartHandle} presentation={props.presentation} onReady={() => setReadyKey(renderKey)} onError={setError} /></ChartBoundary>
-        <button data-export-ignore="true" className="group-card-button" disabled={props.locked} onClick={props.onToggleGroup}>{groupingInfo[props.grouping].action} ↻</button>
       </div>
       <section className="shares-section" aria-label="Exact roommate shares"><div className="section-heading"><h4>Everyone’s share</h4><span>NT$ · 40 / 35 / 25 split</span></div><div className="share-rows">{people.map(person => <div className={`share-row ${selected === person.id ? 'selected-row' : ''}`} key={person.id}><span className="person-label"><i style={{ backgroundColor: person.color }} />{person.label}<small>{person.percent}%</small></span><strong>{amount(allocation(total, person.percent))}</strong><span className="share-delta">+{amount(allocation(total - previousTotal, person.percent))}</span></div>)}</div><p className="share-caption">Change versus September · same split across all expenses</p></section>
       <section className="change-panel"><div className="section-heading"><h4>The increase comes from</h4><button data-export-ignore="true" className="collapse-button" aria-label={`${props.expanded ? 'Collapse' : 'Expand'} change details for ${metadata.name}`} aria-expanded={props.expanded} disabled={props.locked} onClick={props.onToggleDetails}>{props.expanded ? '−' : '+'}</button></div><p>A breakdown of the {money(total - previousTotal)} increase</p>

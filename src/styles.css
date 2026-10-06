@@ -57,7 +57,6 @@ select { color: inherit; }
 .chart-failure { display: grid; place-items: center; color: #a35644; font-size: 12px; }
 .native-tooltip { background: white; box-shadow: 0 3px 16px #28353d22; padding: 9px 12px; border-radius: 6px; font-size: 11px; color: #29333e; white-space: nowrap; }
 .native-tooltip strong { display: block; margin-top: 4px; }
-.group-card-button { display: block; margin: 9px auto 0; padding: 7px 9px; border: 1px dashed #d9e0dc; border-radius: 5px; font-size: 9px; color: #7c8d86; }
 .section-heading { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
 .section-heading h4 { font-size: 12px; font-weight: 600; letter-spacing: -.015em; }
 .section-heading > span { font-size: 8px; color: #8b9792; }

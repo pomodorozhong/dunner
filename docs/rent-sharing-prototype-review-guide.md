@@ -35,7 +35,7 @@ Repeat the same sequence in each package:
 
 Grouping and increase details change across all variants. Hover, selection, and dragged positions belong to each renderer. Switching views preserves dragged positions; regrouping switches directly to a fresh, reconciled layout. Indexed native transitions must not morph unrelated categories or roommates; grouping uses no geometry tween. Hover, dragging, and replay retain native motion. Replay clears positions and restarts the charts while retaining grouping and selection. Reset returns everything to the starting presentation.
 
-Notice discoverability, responsiveness, motion, and whether the native interactions help explain the amounts. The shared app adds selection readouts and grouping, but does not add chart animations or dragging to fill native feature gaps. Try Reduce motion from the toolbar. OS reduced-motion preferences are also respected.
+Notice discoverability, responsiveness, motion, and whether the native interactions help explain the amounts. The shared app adds selection readouts and grouping, but does not add chart animations or dragging to fill native feature gaps. OS reduced-motion preferences are respected automatically. Use the sticky toolbar to cycle grouping; its fixed-width counter shows the current mode.
 
 Broken or confusing interactions are fixed before final export review; PNG capture work can continue.
 
