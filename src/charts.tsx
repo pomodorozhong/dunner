@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type RefObject } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, type RefObject } from 'react'
 import { Sankey, type CustomSankeyLayerProps } from '@nivo/sankey'
 import * as echarts from 'echarts/core'
 import { SankeyChart } from 'echarts/charts'
@@ -6,13 +6,13 @@ import { TooltipComponent } from 'echarts/components'
 import { SVGRenderer } from 'echarts/renderers'
 import type * as PlotlyTypes from 'plotly.js'
 import { money, relatedIds, type Engine, type Graph, type GraphLink, type GraphNode } from './fixture'
-import { useWidth } from './hooks'
+import { useChartSize } from './hooks'
 
 echarts.use([SankeyChart, TooltipComponent, SVGRenderer])
 
 export type ChartHandle = { prepareExport: () => Promise<void> }
 export type Presentation = { positions: Map<string, { x: number; y: number }> }
-type Props = {
+export type ChartProps = {
   engine: Engine
   graph: Graph
   selected: string | null
@@ -25,7 +25,7 @@ type Props = {
   handle: RefObject<ChartHandle | null>
   presentation: Presentation
 }
-const chartHeight = 350
+type Props = ChartProps
 const pause = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms))
 
 // Observe actual SVG changes rather than assuming every package has the same animation duration.
@@ -36,7 +36,11 @@ export async function waitForChartIdle(element: HTMLElement) {
   const deadline = performance.now() + 8000
   while (performance.now() < deadline) {
     await pause(50)
-    const current = [...element.querySelectorAll('svg')].map(svg => svg.outerHTML).join('')
+    const svgs = [...element.querySelectorAll('svg')]
+    const canvases = [...element.querySelectorAll('canvas')]
+    const current = svgs.length
+      ? svgs.map(svg => svg.outerHTML).join('')
+      : canvases.map(canvas => `${canvas.width}x${canvas.height}`).join('|')
     stable = current && current === previous ? stable + 1 : 0
     previous = current
     if (stable >= 6) return
@@ -47,7 +51,7 @@ export async function waitForChartIdle(element: HTMLElement) {
 function EChartsView(props: Props) {
   const container = useRef<HTMLDivElement>(null)
   const chart = useRef<echarts.EChartsType | null>(null)
-  const width = useWidth(container)
+  const { width, height } = useChartSize(container)
   const latest = useRef(props)
   latest.current = props
 
@@ -109,7 +113,7 @@ function EChartsView(props: Props) {
       applySelection(instance, latest.current)
       props.onReady()
     } catch (error) { props.onError(String(error)) }
-  }, [props.graph, width, props.reducedMotion])
+  }, [props.graph, width, height, props.reducedMotion])
 
   useEffect(() => { if (chart.current) applySelection(chart.current, props) }, [props.selected])
   return <div ref={container} className="chart-host" role="img" aria-label="ECharts expense allocation Sankey. Use the text controls below for keyboard inspection." />
@@ -127,7 +131,7 @@ type NivoLink = GraphLink & { startColor: string; endColor: string }
 
 function NivoView(props: Props) {
   const container = useRef<HTMLDivElement>(null)
-  const width = useWidth(container)
+  const { width, height } = useChartSize(container)
   const data = useMemo(() => ({
     nodes: props.graph.nodes.map(node => ({ ...node })),
     // Nivo otherwise derives link color from the source node. Equal gradient endpoints preserve category colors.
@@ -159,7 +163,7 @@ function NivoView(props: Props) {
 
   return <div ref={container} className="chart-host">
     {width > 0 && <Sankey<GraphNode, NivoLink>
-      width={width} height={chartHeight} data={data}
+      width={width} height={height} data={data}
       margin={{ top: 8, right: 4, bottom: 8, left: 4 }}
       align="justify" sort="input" nodeThickness={13} nodeSpacing={18}
       colors={node => props.graph.nodes.find(n => n.id === node.id)!.color} label={node => props.graph.nodes.find(n => n.id === node.id)!.label}
@@ -183,7 +187,7 @@ function PlotlyView(props: Props) {
   const container = useRef<HTMLDivElement>(null)
   const plotly = useRef<typeof PlotlyTypes | null>(null)
   const plot = useRef<PlotlyTypes.PlotlyHTMLElement | null>(null)
-  const width = useWidth(container)
+  const { width, height } = useChartSize(container)
   const latest = useRef(props)
   latest.current = props
   const work = useRef<Promise<unknown>>(Promise.resolve())
@@ -248,7 +252,7 @@ function PlotlyView(props: Props) {
       if (current.reducedMotion && plot.current) library.purge(plot.current)
       const draw = fresh ? library.newPlot : library.react
       const result = await draw(element, [{
-        type: 'sankey', arrangement: current.reducedMotion ? 'perpendicular' : 'snap', valueformat: ',.0f', valuesuffix: ' NT$',
+        type: 'sankey', arrangement: 'snap', valueformat: ',.0f', valuesuffix: ' NT$',
         node: {
           label: graph.nodes.map(node => node.label),
           customdata: graph.nodes.map(node => node.id),
@@ -267,7 +271,7 @@ function PlotlyView(props: Props) {
           hovertemplate: '%{source.label} → %{target.label}<br>NT$%{value:,.0f}<extra></extra>',
         },
       }], {
-        width, height: chartHeight, margin: { l: 4, r: 4, t: 8, b: 8 },
+        width, height, margin: { l: 4, r: 4, t: 8, b: 8 },
         paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
         font: { family: 'Arial, sans-serif', size: 10, color: '#29333e' },
         uirevision: graph.nodes.map(n => n.id).join(','),
@@ -300,7 +304,7 @@ function PlotlyView(props: Props) {
     }).catch(error => { if (!disposed.current) latest.current.onError(String(error)) })
   }
 
-  useEffect(() => { render.current() }, [props.graph, width, props.reducedMotion])
+  useEffect(() => { render.current() }, [props.graph, width, height, props.reducedMotion])
   useEffect(() => {
     if (!plot.current || !plotly.current) return
     if (props.reducedMotion) { render.current(); return }
@@ -328,8 +332,14 @@ async function applyPlotlySelection(library: typeof PlotlyTypes, plot: PlotlyTyp
   } as unknown as PlotlyTypes.Data)
 }
 
+const RechartsView = lazy(() => import('./chart-adapters/RechartsView'))
+const VisxView = lazy(() => import('./chart-adapters/VisxView'))
+const AntDesignView = lazy(() => import('./chart-adapters/AntDesignView'))
+
 export default function Chart(props: Props) {
   if (props.engine === 'echarts') return <EChartsView {...props} />
   if (props.engine === 'nivo') return <NivoView {...props} />
-  return <PlotlyView {...props} />
+  if (props.engine === 'plotly') return <PlotlyView {...props} />
+  const Renderer = props.engine === 'recharts' ? RechartsView : props.engine === 'visx' ? VisxView : AntDesignView
+  return <Suspense fallback={<div className="chart-host chart-loading" role="status">Loading renderer…</div>}><Renderer {...props} /></Suspense>
 }

@@ -12,15 +12,19 @@ export function useMedia(query: string) {
   return matches
 }
 
-export function useWidth(ref: React.RefObject<HTMLDivElement | null>) {
-  const [width, setWidth] = useState(0)
+export function useChartSize(ref: React.RefObject<HTMLDivElement | null>) {
+  const [size, setSize] = useState({ width: 0, height: 350 })
   useEffect(() => {
     if (!ref.current) return
-    const observer = new ResizeObserver(([entry]) => setWidth(Math.floor(entry.contentRect.width)))
+    const observer = new ResizeObserver(([entry]) => {
+      const width = Math.floor(entry.contentRect.width)
+      const height = Math.floor(entry.contentRect.height)
+      setSize(current => current.width === width && current.height === height ? current : { width, height })
+    })
     observer.observe(ref.current)
     return () => observer.disconnect()
   }, [ref])
-  return width
+  return size
 }
 
 export const nextFrame = () => new Promise<void>(resolve => requestAnimationFrame(() => resolve()))

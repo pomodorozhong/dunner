@@ -12,12 +12,16 @@
     "refresh:stats": "node scripts/refresh-library-stats.mjs"
   },
   "dependencies": {
+    "@ant-design/plots": "2.6.8",
     "@nivo/sankey": "0.99.0",
+    "@visx/sankey": "4.0.0",
     "echarts": "6.1.0",
     "html-to-image": "1.11.13",
     "plotly.js-dist-min": "4.1.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "react-is": "19.3.0",
+    "recharts": "3.10.1"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.3",

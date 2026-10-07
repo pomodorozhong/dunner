@@ -1,4 +1,4 @@
-export type Engine = 'echarts' | 'nivo' | 'plotly'
+export type Engine = 'echarts' | 'nivo' | 'plotly' | 'recharts' | 'visx' | 'ant-design'
 export const groupingModes = ['individual', 'grouped', 'detailed'] as const
 export type GroupingMode = typeof groupingModes[number]
 export function nextGrouping(mode: GroupingMode): GroupingMode {

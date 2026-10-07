@@ -1,10 +1,10 @@
 {
-  "fetchedAt": "2026-10-04T11:53:45.111Z",
+  "fetchedAt": "2026-10-06T23:16:09.851Z",
   "libraries": {
     "echarts": {
       "repository": "apache/echarts",
       "url": "https://github.com/apache/echarts",
-      "stars": 67447,
+      "stars": 67457,
       "license": "Apache-2.0",
       "defaultBranch": "master",
       "archived": false,
@@ -26,13 +26,46 @@
     "plotly": {
       "repository": "plotly/plotly.js",
       "url": "https://github.com/plotly/plotly.js",
-      "stars": 18355,
+      "stars": 18356,
       "license": "MIT",
       "defaultBranch": "main",
       "archived": false,
-      "commitDate": "2026-10-03T20:09:44Z",
-      "commitUrl": "https://github.com/plotly/plotly.js/commit/c9ce4738fb54e9db325dfb7c056a5cde113c4fb2",
+      "commitDate": "2026-10-05T18:08:06Z",
+      "commitUrl": "https://github.com/plotly/plotly.js/commit/b6684b76b8765970120b04a75e7e78797302bbbc",
       "licenseUrl": "https://github.com/plotly/plotly.js/blob/main/LICENSE"
+    },
+    "recharts": {
+      "repository": "recharts/recharts",
+      "url": "https://github.com/recharts/recharts",
+      "stars": 27618,
+      "license": "MIT",
+      "defaultBranch": "main",
+      "archived": false,
+      "commitDate": "2026-10-06T10:06:41Z",
+      "commitUrl": "https://github.com/recharts/recharts/commit/6b4b00f2e78076c64561941543bdb0263df79f42",
+      "licenseUrl": "https://github.com/recharts/recharts/blob/main/LICENSE"
+    },
+    "visx": {
+      "repository": "airbnb/visx",
+      "url": "https://github.com/airbnb/visx",
+      "stars": 21075,
+      "license": "MIT",
+      "defaultBranch": "master",
+      "archived": false,
+      "commitDate": "2026-06-22T14:20:47Z",
+      "commitUrl": "https://github.com/airbnb/visx/commit/485c0359664ee8e612992defb16e1f035ed40b23",
+      "licenseUrl": "https://github.com/airbnb/visx/blob/master/LICENSE"
+    },
+    "ant-design": {
+      "repository": "ant-design/ant-design-charts",
+      "url": "https://github.com/ant-design/ant-design-charts",
+      "stars": 2240,
+      "license": "MIT",
+      "defaultBranch": "master",
+      "archived": false,
+      "commitDate": "2026-01-29T09:16:30Z",
+      "commitUrl": "https://github.com/ant-design/ant-design-charts/commit/5bb63627fab6629f4bd556e0290873c1b19fdc32",
+      "licenseUrl": "https://github.com/ant-design/ant-design-charts/blob/master/LICENSE"
     }
   }
 }
