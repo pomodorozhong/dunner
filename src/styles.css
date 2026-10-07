@@ -17,7 +17,7 @@ select { color: inherit; }
 .app-shell { max-width: 1700px; margin: 0 auto; padding: 0 40px; }
 .site-header { height: 85px; border-bottom: 1px solid #dedfd9; font-size: 13px; }
 .brand { text-decoration: none; color: #465057; font-weight: 500; }
-.brand-mark { display: grid; place-items: center; width: 31px; height: 31px; background: #2b3b3b; color: white; border-radius: 8px; font-size: 23px; font-weight: 700; }
+.brand-mark, .card-monogram { display: grid; place-items: center; width: 31px; height: 31px; flex-shrink: 0; background: #2b3b3b; color: white; border-radius: 8px; font-size: 23px; font-weight: 700; }
 .brand-divider { height: 16px; width: 1px; background: #cbceca; margin: 0 8px; }
 .fixture-pill { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #677068; }
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #45997b; }
@@ -41,7 +41,6 @@ select { color: inherit; }
 .version { color: #8b958a; font-size: 10px; font-family: monospace; }
 .native-features { color: #838c82; font-size: 10px; margin: 0 0 16px; min-height: 15px; line-height: 1.5; }
 .share-card { background: white; border-radius: 14px; padding: 23px; border: 1px solid #e0e3db; box-shadow: 0 5px 20px #38402a04; overflow: hidden; }
-.card-monogram { font-weight: 700; font-size: 18px; color: #46564e; }
 .card-header h3 { font-size: 22px; font-weight: 600; letter-spacing: -.04em; margin-top: 13px; }
 .total-row { display: flex; gap: 10px; align-items: center; margin-top: 4px; }
 .total-row > strong { font-size: clamp(29px, 2.8vw, 42px); line-height: 1.2; font-weight: 600; letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
