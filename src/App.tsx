@@ -95,8 +95,16 @@ export default function App() {
         <header className="page-section-heading">
           <p className="eyebrow">01 · REVIEW</p>
           <h2 id="review-tasks-title">Review tasks</h2>
+          <p>Repeat these checks in each renderer. Record the action, expected result, what happened, and which package you prefer.</p>
         </header>
-        <ol><li><span>01</span><div><strong>Read the first render</strong><p>Follow one expense to each roommate. Replay and compare the arrival of labels and ribbons.</p></div></li><li><span>02</span><div><strong>Explore, then simplify</strong><p>Hover, click a share, try dragging, and group utilities. Watch what each package preserves.</p></div></li><li><span>03</span><div><strong>Share the result</strong><p>Download each card. Can someone identify their share from the image alone?</p></div></li></ol>
+        <ol>
+          <li><span>01</span><div><strong>Compare flow and readability</strong><p>Switch to compact mode, follow Rent to all three roommates, and try Replay render. Compare labels, ribbon crossings, and initial motion; return to full image for the remaining checks.</p><p className="review-expected">Look for: readable labels and a clear path from each expense to each person.</p></div></li>
+          <li><span>02</span><div><strong>Verify an exact allocation</strong><p>Hover Rent, click Jonathan, then click the Rent → Jonathan ribbon. Inspect the breakdown below the card. Click the same ribbon again to clear it.</p><p className="review-expected">Expect: Rent NT$30,000; Jonathan NT$14,000 total; Rent → Jonathan NT$10,500.</p></div></li>
+          <li><span>03</span><div><strong>Cycle all three groupings</strong><p>Use switching grouping to go 1/3 → 2/3 → 3/3 → 1/3. In 3/3, follow Utilities through Electricity, Water, and Internet to the roommates.</p><p className="review-expected">Expect: Utilities NT$4,000 = 2,400 + 600 + 1,000. Shares stay 16,000 / 14,000 / 10,000; household total stays 40,000.</p></div></li>
+          <li><span>04</span><div><strong>Test dragging and view changes</strong><p>Drag a node in ECharts and Plotly, then switch compact/full image. Try Replay render afterward. The other four packages have no built-in Sankey dragging.</p><p className="review-expected">Expect: ribbons follow the node; Plotly snaps. Switching modes keeps positions; Replay clears them.</p></div></li>
+          <li><span>05</span><div><strong>Try keyboard and phone controls</strong><p>Open Text breakdown & keyboard controls. Use Tab and Enter/Space to select Jonathan; choose Rent → Jonathan from the ribbon selector. On a phone, use the renderer arrows or swipe to inspect all six.</p><p className="review-expected">Expect: the same exact amounts with keyboard controls, visible focus, and readable labels on a small screen.</p></div></li>
+          <li><span>06</span><div><strong>Check the image someone receives</strong><p>Make sure the increase details are expanded using +5.3%. Download each PNG in full image mode and inspect Preview PNG at phone size. Ask someone to find their share and explain the increase.</p><p className="review-expected">Expect: October 2026, the Oct 4 snapshot date, all exact shares, and the NT$2,000 increase. No tooltips or comparison controls.</p></div></li>
+        </ol>
       </section>
 
       <section className="page-section sankey-comparison" aria-labelledby="sankey-comparison-title">

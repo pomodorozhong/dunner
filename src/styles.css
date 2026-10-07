@@ -107,13 +107,14 @@ select { color: inherit; }
 .inspector-body caption { text-align: left; padding-bottom: 8px; }
 .inspector-body th, .inspector-body td { padding: 6px 3px; text-align: right; border-bottom: 1px solid #d9e1d4; }
 .inspector-body th:first-child { text-align: left; font-weight: 500; }
-.comparison-notes { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; }
+.comparison-notes { display: grid; grid-template-columns: 1fr 3fr; gap: 32px; }
 .comparison-notes .page-section-heading { margin-bottom: 0; }
-.comparison-notes ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 25px; }
+.comparison-notes ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
 .comparison-notes li { display: flex; gap: 10px; }
 .comparison-notes li > span { font-size: 9px; color: #9fa99c; padding-top: 2px; }
-.comparison-notes strong { font-size: 11px; color: #5a6e5b; font-weight: 600; }
-.comparison-notes p:not(.eyebrow) { font-size: 10px; color: #919b8c; line-height: 1.7; margin-top: 7px; }
+.comparison-notes strong { font-size: 12px; color: #5a6e5b; font-weight: 600; }
+.comparison-notes p:not(.eyebrow) { font-size: 11px; color: #778372; line-height: 1.7; margin-top: 7px; }
+.comparison-notes p.review-expected { color: #4e6a58; padding-top: 8px; border-top: 1px solid #dfe5da; }
 .site-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1px solid #d9dfd4; padding: 24px 0; color: #929e8f; font-size: 9px; }
 .error-message { font-size: 11px; color: #a1563f; margin-top: 12px; padding: 10px; background: #fff0e8; border-radius: 6px; }
 .error-message button { text-decoration: underline; }
