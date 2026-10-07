@@ -20,6 +20,21 @@ npm run build
 npm run preview
 ```
 
+## GitHub Pages
+
+The [Pages workflow](.github/workflows/pages.yml) runs tests, builds the site, and deploys pushes to `main` to [pomodorozhong.github.io/dunner](https://pomodorozhong.github.io/dunner/). You can also run it manually from GitHub Actions; deployment is restricted to `main`.
+
+In repository **Settings → Pages**, select **GitHub Actions** as the publishing source (already configured for this repository). The workflow uses GitHub's built-in token; no additional secret is required. Vite's deployment base path comes from the Pages configuration, so assets work under `/dunner/` and local development continues to use `/`.
+
+To preview the repository Pages build locally:
+
+```sh
+npm run build -- --base=/dunner/
+npm run preview -- --base=/dunner/
+```
+
+Open the preview URL with `/dunner/` appended. The build command includes TypeScript checking.
+
 ## Compare
 
 **Compact comparison** is the default: wide screens show all six labeled Sankeys in a 2×3 grid with chart heights sized to the viewport. Use **Comparison mode** in the sticky toolbar to switch to **full image**, which restores the complete expense cards, exact breakdowns, PNG downloads, and library comparison. Selections, grouping, and native dragged positions carry across mode changes. On narrow screens, use the renderer navigation to inspect one chart at a time. Click categories, roommates, and ribbons to pin exact breakdowns; click again to clear. Native hover behavior remains local to each renderer. ECharts and Plotly support native node dragging; the other four do not provide built-in Sankey dragging.
