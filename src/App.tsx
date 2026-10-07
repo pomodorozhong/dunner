@@ -29,6 +29,7 @@ class ChartBoundary extends Component<{ children: ReactNode; onError: (message: 
 }
 
 export default function App() {
+  const [compact, setCompact] = useState(true)
   const [grouping, setGrouping] = useState<GroupingMode>('individual')
   const [expanded, setExpanded] = useState(true)
   const [activeVariant, setActiveVariant] = useState(0)
@@ -41,7 +42,7 @@ export default function App() {
     recharts: { positions: new Map() }, visx: { positions: new Map() }, 'ant-design': { positions: new Map() },
   })
   const reducedMotion = useMedia('(prefers-reduced-motion: reduce)')
-  const narrow = useMedia('(max-width: 1199px)')
+  const narrow = useMedia(compact ? '(max-width: 899px)' : '(max-width: 1199px)')
   const comparisonRef = useRef<HTMLElement>(null)
   const graph = useMemo(() => buildGraph(grouping), [grouping])
 
@@ -82,9 +83,9 @@ export default function App() {
     ])) as Record<Engine, string | null>)
   }, [])
   const replay = () => { setInitialAnimation(true); engines.forEach(engine => presentations.current[engine].positions.clear()); setEpoch(e => e + 1) }
-  const reset = () => { setGrouping('individual'); setExpanded(true); setSelections(emptySelection); replay() }
+  const reset = () => { setCompact(true); setGrouping('individual'); setExpanded(true); setSelections(emptySelection); replay() }
 
-  return <div className="app-shell">
+  return <div className={`app-shell ${compact ? 'compact-comparison' : 'full-comparison'}`}>
     <header className="site-header flex items-center justify-between">
       <a href="#main" className="brand flex items-center gap-2" aria-label="Dunner Sankey comparison"><span className="brand-mark" aria-hidden="true">d.</span> dunner<span className="brand-divider" />Sankey comparison</a>
       <span className="fixture-pill"><span className="status-dot" />Local prototype · fixture data</span>
@@ -106,11 +107,12 @@ export default function App() {
         <section className="studio-toolbar sticky top-0 z-50 shadow-sm" aria-label="Comparison controls">
           <div className="toolbar-actions flex flex-wrap items-center gap-2">
             <button className="control-button whitespace-nowrap" aria-describedby="grouping-status" disabled={!!exporting} onClick={() => changeGrouping(nextGrouping(grouping))}>switching grouping <span className="font-mono tabular-nums">({groupingInfo[grouping].step}/3)</span></button>
+            <button className="control-button whitespace-nowrap" aria-label="Compact comparison" aria-pressed={compact} disabled={!!exporting} onClick={() => setCompact(value => !value)}>Comparison mode: {compact ? 'compact' : 'full image'}</button>
             <button className="text-button" disabled={!!exporting} onClick={replay}>↻ Replay render</button>
             <button className="text-button" disabled={!!exporting} onClick={reset}>Reset view</button>
           </div>
         </section>
-        <p id="grouping-status" className="grouping-explanation" role="status"><strong>{groupingInfo[grouping].label} · {groupingInfo[grouping].step} / 3.</strong> {grouping === 'detailed' ? 'Utilities stays visible and branches into Electricity, Water, and Internet before reaching the roommates.' : 'Cycle through individual expenses, grouped utilities, and utilities with individual bills.'} Utilities = 2,400 + 600 + 1,000 = NT$4,000. Total and shares stay unchanged. Layouts switch directly; Replay tries native initial motion.</p>
+        <p id="grouping-status" className="grouping-explanation" role="status"><strong>{groupingInfo[grouping].label} · {groupingInfo[grouping].step} / 3.</strong> {!compact && <>{grouping === 'detailed' ? 'Utilities stays visible and branches into Electricity, Water, and Internet before reaching the roommates.' : 'Cycle through individual expenses, grouped utilities, and utilities with individual bills.'} Utilities = 2,400 + 600 + 1,000 = NT$4,000. Total and shares stay unchanged. Layouts switch directly; Replay tries native initial motion.</>}</p>
         <div className="interaction-hint flex items-center justify-between gap-3"><p><span aria-hidden="true">↗</span> Click a node or ribbon to inspect it. Hover for renderer-specific highlights or tooltips. Drag nodes where supported.</p><span>{reducedMotion ? 'Reduced motion on' : 'Native motion on'}</span></div>
 
         {narrow && <nav className="renderer-navigation" aria-label="Sankey renderer navigation">

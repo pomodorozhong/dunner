@@ -2,16 +2,15 @@ import { useEffect, useMemo, useRef } from 'react'
 import { Sankey } from '@ant-design/plots'
 import type { SankeyConfig } from '@ant-design/plots'
 import { money, relatedIds, type Graph, type GraphLink, type GraphNode } from '../fixture'
-import { useWidth } from '../hooks'
+import { useChartSize } from '../hooks'
 import { waitForChartIdle, type ChartProps } from '../charts'
 
-const chartHeight = 350
 type Datum = Record<string, unknown>
 type PlotEvent = { type?: string; data?: unknown; nativeEvent?: boolean }
 
 export default function AntDesignView(props: ChartProps) {
   const container = useRef<HTMLDivElement>(null)
-  const width = useWidth(container)
+  const { width, height } = useChartSize(container)
   const latest = useRef(props)
   latest.current = props
   const related = relatedIds(props.graph, props.selected)
@@ -31,7 +30,7 @@ export default function AntDesignView(props: ChartProps) {
     return {
       data: graph,
       width,
-      height: chartHeight,
+      height,
       autoFit: false,
       animate: false,
       layout: { nodeId: (node: Datum) => String(node.id), nodeAlign: 'justify', nodeWidth: 0.024, nodePadding: 0.035, iterations: 16 },
@@ -51,7 +50,7 @@ export default function AntDesignView(props: ChartProps) {
       onReady: () => latest.current.onReady(),
       onEvent: (_chart, event) => handlePlotEvent(event, latest.current.graph, latest.current.onSelect, latest.current.onExpand),
     }
-  }, [props.graph, props.selected, width, nodeById, related])
+  }, [props.graph, props.selected, width, height, nodeById, related])
 
   useEffect(() => {
     if (width <= 0) return

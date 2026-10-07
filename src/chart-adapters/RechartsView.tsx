@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Sankey, Tooltip, type SankeyElementType, type SankeyLinkProps, type SankeyNodeProps } from 'recharts'
 import { relatedIds, type GraphLink, type GraphNode } from '../fixture'
-import { useWidth } from '../hooks'
+import { useChartSize } from '../hooks'
 import { waitForChartIdle, type ChartProps } from '../charts'
-
-const chartHeight = 350
 
 export default function RechartsView(props: ChartProps) {
   const container = useRef<HTMLDivElement>(null)
-  const width = useWidth(container)
+  const { width, height } = useChartSize(container)
   const [hovered, setHovered] = useState<string | null>(null)
   const data = useMemo(() => {
     const indices = new Map(props.graph.nodes.map((node, index) => [node.id, index]))
@@ -69,7 +67,7 @@ export default function RechartsView(props: ChartProps) {
 
   return <div ref={container} className="chart-host" role="img" aria-label="Recharts expense allocation Sankey. Use the text controls below for keyboard inspection.">
     {width > 0 && <Sankey
-      width={width} height={chartHeight} data={data}
+      width={width} height={height} data={data}
       nodeWidth={13} nodePadding={18} iterations={16} linkCurvature={0.5}
       sort={false} align="justify" accessibilityLayer
       node={renderNode} link={renderLink}

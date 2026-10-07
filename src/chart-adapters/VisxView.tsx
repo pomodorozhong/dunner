@@ -1,21 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Sankey, sankeyJustify, type SankeyGraph } from '@visx/sankey'
 import { relatedIds, type GraphLink, type GraphNode } from '../fixture'
-import { useWidth } from '../hooks'
+import { useChartSize } from '../hooks'
 import { waitForChartIdle, type ChartProps } from '../charts'
-
-const chartHeight = 350
 
 export default function VisxView(props: ChartProps) {
   const container = useRef<HTMLDivElement>(null)
-  const width = useWidth(container)
+  const { width, height } = useChartSize(container)
   const [hovered, setHovered] = useState<string | null>(null)
   // d3-sankey mutates its root graph during layout, so create a fresh copy when
   // the size or focus changes before asking the visx component to lay it out.
   const root = useMemo(() => ({
     nodes: props.graph.nodes.map(node => ({ ...node })),
     links: props.graph.links.map(link => ({ ...link })),
-  }), [props.graph, width, hovered, props.selected])
+  }), [props.graph, width, height, hovered, props.selected])
   const focus = hovered ?? props.selected
   const related = relatedIds(props.graph, focus)
   const utilityChildren = new Set(props.graph.links.filter(link => link.source === 'utilities').map(link => link.target))
@@ -31,7 +29,7 @@ export default function VisxView(props: ChartProps) {
   }, [width, props.graph])
 
   return <div ref={container} className="chart-host" role="img" aria-label="visx Sankey expense allocation. Use the text controls below for keyboard inspection.">
-    {width > 0 && <svg width={width} height={chartHeight} viewBox={`0 0 ${width} ${chartHeight}`} aria-hidden="true">
+    {width > 0 && <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
       <Sankey<GraphNode, GraphLink>
         root={root as unknown as SankeyGraph<GraphNode, GraphLink>}
         nodeId={node => node.id}
@@ -39,7 +37,7 @@ export default function VisxView(props: ChartProps) {
         nodeWidth={13}
         nodePadding={18}
         iterations={16}
-        size={[width, chartHeight]}
+        size={[width, height]}
       >
         {({ graph, createPath }) => <>
           <g className="visx-sankey-links">

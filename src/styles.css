@@ -151,5 +151,42 @@ select { color: inherit; }
 .matrix-scroll-hint { font-size: 10px; color: #84917a; margin: -5px 0 12px; }
 .library-matrix th:first-child { position: sticky; left: 0; z-index: 1; border-right: 1px solid #e8ece4; }
 .chart-loading { display: grid; place-items: center; color: #879486; font-size: 11px; }
+.compact-comparison .site-header { height: 56px; }
+.compact-comparison .comparison-notes,
+.compact-comparison .interaction-hint,
+.compact-comparison .native-features,
+.compact-comparison .card-header,
+.compact-comparison .chart-columns,
+.compact-comparison .shares-section,
+.compact-comparison .change-panel,
+.compact-comparison .selection-readout,
+.compact-comparison .snapshot-footer,
+.compact-comparison .variant-actions,
+.compact-comparison .capability-note,
+.compact-comparison .text-inspector,
+.compact-comparison .library-comparison,
+.compact-comparison .site-footer { display: none; }
+.compact-comparison .sankey-comparison { margin-top: 0; border-top: 0; padding: 12px 0; }
+.compact-comparison .page-section-heading { margin-bottom: 12px; }
+.compact-comparison .page-section-heading .eyebrow { display: none; }
+.compact-comparison .page-section-heading h2 { font-size: 20px; }
+.compact-comparison .grouping-explanation { margin: 10px 0 14px; padding: 0; border: 0; background: transparent; }
+.compact-comparison .variant-heading { margin-bottom: 6px; min-height: 20px; }
+.compact-comparison .variant-heading h2 { font-size: 13px; }
+.compact-comparison .share-card { padding: 10px; border-radius: 9px; box-shadow: none; }
+.compact-comparison .chart-section { margin: 0; }
+.compact-comparison .chart-host { height: clamp(160px, calc((100dvh - 330px) / 2), 350px); }
+@media (min-width: 900px) {
+  .compact-comparison.app-shell { max-width: 1700px; }
+  .compact-comparison .comparison-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 20px; overflow: visible; padding: 0; }
+  .compact-comparison .comparison-grid > .variant { min-width: 0; }
+}
+@media (max-width: 899px) {
+  .compact-comparison .chart-host { height: 350px; }
+}
+@media (max-width: 600px) {
+  .compact-comparison .toolbar-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .compact-comparison .toolbar-actions .control-button { font-size: 10px; padding: 9px 8px; }
+}
 .library-matrix { min-width: 1500px; }
 .library-matrix th:first-child { width: 15%; }
